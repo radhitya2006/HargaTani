@@ -1,49 +1,45 @@
+@props(['title', 'heading', 'description'])
+
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        @include('partials.head')
+        @include('partials.head', ['title' => $title])
     </head>
-    <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
-        <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-            <div class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-e dark:border-neutral-800">
-                <div class="absolute inset-0 bg-neutral-900"></div>
-                <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate>
-                    <span class="flex h-10 w-10 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="me-2 h-7 fill-current text-white" />
-                    </span>
-                    {{ config('app.name', 'Laravel') }}
-                </a>
+    <body class="ht-auth">
+        <x-skip-link />
 
-                @php
-                    [$message, $author] = str(Illuminate\Foundation\Inspiring::quotes()->random())->explode('-');
-                @endphp
+        <div class="ht-auth-story">
+            <x-landing-brand />
 
-                <div class="relative z-20 mt-auto">
-                    <blockquote class="space-y-2">
-                        <flux:heading size="lg">&ldquo;{{ trim($message) }}&rdquo;</flux:heading>
-                        <footer><flux:heading>{{ trim($author) }}</flux:heading></footer>
-                    </blockquote>
-                </div>
-            </div>
-            <div class="w-full lg:p-8">
-                <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                    <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden" wire:navigate>
-                        <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                            <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
-                        </span>
-
-                        <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
-                    </a>
-                    {{ $slot }}
-                </div>
+            <div class="ht-auth-story-copy">
+                <span class="ht-brand-icon ht-auth-emblem" aria-hidden="true"><i></i></span>
+                <p class="ht-auth-tagline">Langkah baik,<br>dimulai dari sini.</p>
+                <p class="ht-auth-story-description">
+                    Kenali harga, temukan peluang, dan bangun hubungan yang lebih dekat dengan hasil panen lokal.
+                </p>
             </div>
         </div>
 
-        @persist('toast')
-            <flux:toast.group>
-                <flux:toast />
-            </flux:toast.group>
-        @endpersist
+        <main id="main-content" tabindex="-1" class="ht-auth-main">
+            <a href="{{ route('home') }}" class="ht-auth-back">
+                <flux:icon.arrow-left class="size-4" />
+                Kembali ke beranda
+            </a>
+
+            <div class="ht-auth-content">
+                <header class="ht-auth-heading">
+                    <p>HargaTani · Akun Anda</p>
+                    <h1>{{ $heading }}</h1>
+                    <div>{{ $description }}</div>
+                </header>
+
+                <x-auth-session-status :status="session('status')" />
+
+                {{ $slot }}
+
+                <div class="ht-auth-switch">{{ $switch }}</div>
+            </div>
+        </main>
 
         @fluxScripts
     </body>

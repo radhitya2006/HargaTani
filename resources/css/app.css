@@ -1,5 +1,8 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/plus-jakarta-sans';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import './landing.css';
+@import './auth.css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -9,7 +12,33 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+
+    --color-primary: #166534;
+    --color-primary-hover: #14532d;
+    --color-primary-soft: #ecfdf3;
+    --color-background: #faf8f2;
+    --color-surface: #ffffff;
+    --color-ink: #1f2937;
+    --color-ink-muted: #667085;
+    --color-line: #e4e7dc;
+    --color-control-line: #8a9487;
+    --color-harvest: #f4c95d;
+    --color-success: #166534;
+    --color-warning: #92400e;
+    --color-danger: #b42318;
+    --color-ai: #4338ca;
+    --color-estimate: #2563eb;
+
+    --radius-control: 0.75rem;
+    --radius-panel: 1rem;
+    --container-page: 80rem;
+    --container-form: 50rem;
+    --container-auth: 27.5rem;
+    --text-page: 1.75rem;
+    --text-page--line-height: 1.2;
+    --text-display: 2.25rem;
+    --text-display--line-height: 1.12;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -23,44 +52,51 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    --color-accent: var(--color-primary);
+    --color-accent-content: var(--color-primary);
     --color-accent-foreground: var(--color-white);
 }
 
-@layer theme {
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
-    }
-}
-
 @layer base {
+    :root {
+        color-scheme: light;
+    }
 
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
+    body {
+        @apply bg-background text-ink antialiased;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
     }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
-    @apply grid gap-2;
+    @apply grid min-w-0 gap-2;
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply mb-0! text-sm font-medium leading-tight!;
 }
 
-input:focus[data-flux-control],
-textarea:focus[data-flux-control],
-select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+input[data-flux-control]:not([type='checkbox'], [type='radio']),
+textarea[data-flux-control],
+select[data-flux-control] {
+    @apply min-h-11 rounded-control border-control-line text-base;
 }
 
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
+input:focus-visible[data-flux-control],
+textarea:focus-visible[data-flux-control],
+select:focus-visible[data-flux-control] {
+    @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Flux supplies the control behavior; these rules keep touch targets and branding consistent. */
+[data-flux-button]:not([data-flux-input] [data-flux-button]) {
+    @apply min-h-11 rounded-control;
+}
+
+[data-flux-sidebar-item][data-current] {
+    @apply bg-primary-soft text-primary;
+}

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <body class="min-h-svh">
+        <x-skip-link />
+        <flux:sidebar sticky collapsible="mobile" class="w-60 border-e border-line bg-surface">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
@@ -12,8 +13,14 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                    <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                        Ringkasan
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route(auth()->user()->role->value.'.dashboard')" :current="request()->routeIs(auth()->user()->role->value.'.dashboard')" wire:navigate>
+                        Dashboard {{ auth()->user()->role->label() }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
+                        Pengaturan akun
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
@@ -26,8 +33,9 @@
         </flux:sidebar>
 
         <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+        <flux:header class="border-b border-line bg-surface lg:hidden">
+            <flux:sidebar.toggle class="min-h-11 min-w-11" icon="bars-2" label="Buka navigasi" />
+            <x-app-logo :href="route('dashboard')" />
 
             <flux:spacer />
 

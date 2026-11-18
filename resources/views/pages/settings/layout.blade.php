@@ -1,20 +1,15 @@
-<div class="flex items-start max-md:flex-col">
-    <div class="me-10 w-full pb-4 md:w-[220px]">
+<div class="grid min-w-0 gap-5 md:grid-cols-[12rem_minmax(0,1fr)] md:items-start">
+    <div class="rounded-panel border border-line bg-surface p-2">
         <flux:navlist aria-label="{{ __('Settings') }}">
-            <flux:navlist.item :href="route('profile.edit')" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('security.edit')" wire:navigate>{{ __('Security') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('appearance.edit')" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
+            <flux:navlist.item class="min-h-11" :href="route('profile.edit')" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
+            <flux:navlist.item class="min-h-11" :href="route('security.edit')" wire:navigate>{{ __('Security') }}</flux:navlist.item>
         </flux:navlist>
     </div>
-
-    <flux:separator class="md:hidden" />
-
-    <div class="flex-1 self-stretch max-md:pt-6">
+    <x-ui.panel class="min-w-0 max-w-form">
         <flux:heading>{{ $heading ?? '' }}</flux:heading>
         <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
-
         <div class="mt-5 w-full max-w-lg">
             {{ $slot }}
         </div>
-    </div>
+    </x-ui.panel>
 </div>
