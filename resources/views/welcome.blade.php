@@ -1,10 +1,9 @@
 @php
-    // Contoh tetap untuk pratinjau beranda. Seluruh harga menggunakan satuan Rp/kg.
     $harvests = [
-        ['market' => 'Cabai Merah', 'price' => '45.000', 'trend' => '↗ +Rp2.500', 'direction' => 'up', 'product' => 'Cabai Merah Segar', 'offer' => '42.000', 'stock' => 120, 'place' => 'Tabanan', 'farmer' => 'I Made Sujana', 'tone' => 'chili'],
-        ['market' => 'Bawang Merah', 'price' => '32.000', 'trend' => '↘ −Rp1.500', 'direction' => 'down', 'product' => 'Bawang Merah Pilihan', 'offer' => '30.000', 'stock' => 85, 'place' => 'Bangli', 'farmer' => 'Ni Wayan Sari', 'tone' => 'shallot'],
-        ['market' => 'Tomat', 'price' => '12.000', 'trend' => '↗ +Rp500', 'direction' => 'up', 'product' => 'Tomat Segar Kebun', 'offer' => '10.000', 'stock' => 200, 'place' => 'Buleleng', 'farmer' => 'I Ketut Darma', 'tone' => 'tomato'],
-        ['market' => 'Beras Medium', 'price' => '13.500', 'trend' => '— Stabil', 'direction' => 'flat', 'product' => 'Beras Medium Lokal', 'offer' => '12.500', 'stock' => 350, 'place' => 'Gianyar', 'farmer' => 'I Nyoman Adi', 'tone' => 'rice'],
+        ['product' => 'Cabai Merah Segar', 'offer' => '42.000', 'stock' => 120, 'place' => 'Tabanan', 'farmer' => 'I Made Sujana', 'tone' => 'chili'],
+        ['product' => 'Bawang Merah Pilihan', 'offer' => '30.000', 'stock' => 85, 'place' => 'Bangli', 'farmer' => 'Ni Wayan Sari', 'tone' => 'shallot'],
+        ['product' => 'Tomat Segar Kebun', 'offer' => '10.000', 'stock' => 200, 'place' => 'Buleleng', 'farmer' => 'I Ketut Darma', 'tone' => 'tomato'],
+        ['product' => 'Beras Medium Lokal', 'offer' => '12.500', 'stock' => 350, 'place' => 'Gianyar', 'farmer' => 'I Nyoman Adi', 'tone' => 'rice'],
     ];
     $accountUrl = auth()->check() ? route('dashboard') : route('register');
 @endphp
@@ -16,7 +15,7 @@
             <h1 id="hero-title">Kenali harganya.<br>Hargai <em>hasil panennya.</em></h1>
             <p class="ht-lead">Pantau harga pasar, tentukan harga jual yang lebih terukur, dan temukan hasil panen langsung dari petani lokal.</p>
             <div class="ht-actions">
-                <a class="ht-button ht-primary" href="#harga-pasar">Lihat harga pasar <span aria-hidden="true">→</span></a>
+                <a class="ht-button ht-primary" href="{{ route('prices.index') }}">Lihat harga pasar <span aria-hidden="true">→</span></a>
                 <a class="ht-button" href="#hasil-panen"><flux:icon.shopping-bag class="size-4" /> Jelajahi hasil panen</a>
             </div>
             <div class="ht-benefits"><span>✓ &nbsp; Harga lebih transparan</span><span>Terhubung dengan petani</span></div>
@@ -30,24 +29,44 @@
         </div>
     </section>
     <div class="ht-demo-bar"><div class="ht-wrap ht-between">
-        <p><b>Demo</b> Harga dan produk yang ditampilkan adalah data contoh.</p>
+        <p><b>Demo</b> Sumber harga tercantum pada setiap kartu. Hasil panen yang ditawarkan adalah data contoh.</p>
         <a class="ht-link" href="{{ $accountUrl }}">Jelajahi HargaTani →</a>
     </div></div>
 
-    <section class="ht-wrap ht-section" id="harga-pasar" aria-labelledby="market-title">
+    <section class="ht-wrap ht-section" id="harga-pasar" tabindex="-1" aria-labelledby="market-title">
         <p class="ht-eyebrow">Informasi untuk langkah lebih pasti</p>
         <h2 id="market-title">Harga pasar, sekilas.</h2>
         <p class="ht-intro">Referensi harga komoditas untuk keputusan yang lebih terukur.</p>
-        <div class="ht-grid">
-            @foreach ($harvests as $item)
+        <div class="ht-grid ht-market-grid">
+            @foreach ($marketCards as $slug => $item)
+                @php
+                    $change = $item['change'];
+                @endphp
                 <article class="ht-card ht-price ht-{{ $item['tone'] }}">
-                    <h3><span class="ht-swatch" aria-hidden="true"></span>{{ $item['market'] }}</h3>
-                    <p class="ht-amount">Rp{{ $item['price'] }}<small>/kg</small></p>
-                    <div class="ht-price-foot"><span><strong>{{ $item['trend'] }}</strong> dari kemarin</span><i aria-hidden="true" class="ht-spark ht-{{ $item['direction'] }}"></i></div>
+                    <h3>
+                        <span class="ht-swatch" aria-hidden="true"></span>
+                        <a class="ht-link" href="{{ route('prices.index', ['komoditas' => $slug]) }}">{{ $item['name'] }}</a>
+                    </h3>
+                    @if ($item['latest'])
+                    <p class="ht-amount">Rp{{ number_format($item['latest']['price'], 0, ',', '.') }}<small>/kg</small></p>
+                    <div class="ht-price-foot">
+                        @if ($change === null)
+                            <span>Belum ada pembanding</span>
+                        @else
+                            <span><strong>{{ $change === 0 ? 'Stabil' : ($change > 0 ? '+' : '−').'Rp'.number_format(abs($change), 0, ',', '.') }}</strong> dari pengamatan sebelumnya</span>
+                        @endif
+                    </div>
+                    <p class="ht-meta">PIHPS Bank Indonesia · <time datetime="{{ $item['latest']['date']->toDateString() }}">{{ $item['latest']['date']->translatedFormat('j F Y') }}</time></p>
+                    @if ($item['isStale'])
+                        <p class="market-note">Data terakhir berusia lebih dari tujuh hari.</p>
+                    @endif
+                    @else
+                        <p>Belum ada harga dari PIHPS Bank Indonesia.</p>
+                    @endif
                 </article>
             @endforeach
         </div>
-        <div class="ht-meta ht-between"><small>● &nbsp; Data contoh · 19 Mei 2026</small><small>Referensi harga eceran per kilogram</small></div>
+        <div class="ht-meta"><small>Referensi harga eceran per kilogram</small></div>
     </section>
 
     <section class="ht-calc" id="kalkulator" aria-label="Kalkulator harga">
@@ -57,7 +76,7 @@
         </div>
     </section>
 
-    <section class="ht-wrap ht-section" id="hasil-panen" aria-labelledby="product-title">
+    <section class="ht-wrap ht-section" id="hasil-panen" tabindex="-1" aria-labelledby="product-title">
         <p class="ht-eyebrow">Segar dari kebun lokal</p>
         <h2 id="product-title">Kenali hasil panen di sekitar Anda.</h2>
         <p class="ht-intro">Dari tangan yang menanam, untuk kebutuhan Anda.</p>

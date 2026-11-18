@@ -1,9 +1,12 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarketPriceController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', HomeController::class)->name('home');
+Route::get('/harga', MarketPriceController::class)->name('prices.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');

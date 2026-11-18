@@ -7,7 +7,7 @@ Fondasi proyek UAS HargaTani berdasarkan langkah 2 pada [PRD](PRD.md). Menggunak
 - Starter kit Livewire resmi, login/logout, registrasi, pengaturan profil dan kata sandi.
 - Registrasi hanya menerima `petani` atau `pembeli`; `admin` dibuat melalui seeder.
 - Enum peran, migration peran/status aktif, middleware akses peran dan akun aktif, serta UserPolicy untuk akses profil.
-- Dashboard awal masing-masing peran. Harga pasar, kalkulator, etalase, pesanan, dan Gemini belum diimplementasikan.
+- Dashboard awal masing-masing peran. Beranda dan halaman Harga Pasar membaca tiga seri PIHPS Bali dari MySQL.
 - Session, cache, dan queue menggunakan database. Email lokal ditulis ke log; verifikasi email, 2FA, dan passkeys belum diaktifkan.
 - Git sudah diinisialisasi sebelum pengerjaan ini. Tidak ada commit atau push otomatis.
 
@@ -50,6 +50,34 @@ Pada workspace ini database `hargatani` dan akun admin sudah dibuat. Email dan p
 Untuk komputer baru, isi kredensial sendiri sebelum seeding. `php artisan db:seed --class=AdminSeeder` aman dijalankan ulang: tidak mereset password, mengaktifkan kembali akun, atau menaikkan akun publik yang kebetulan memakai email sama menjadi admin. Perubahan `.env` tidak mengubah password akun yang sudah ada; gunakan pengaturan kata sandi. Setelah mengubah konfigurasi, jalankan `php artisan config:clear`.
 
 Peran memakai enum `App\Enums\Role` dan kolom enum MySQL, sehingga tidak membutuhkan tabel/seeder peran terpisah. Akun petani/pembeli dapat dibuat dari formulir registrasi.
+
+## Sinkronisasi harga PIHPS
+
+HargaTani mengambil harga eceran per kilogram untuk **Bawang Merah Ukuran Sedang, Cabai Merah Besar, dan Cabai Rawit Merah** melalui permintaan JSON yang dipakai [tabel PIHPS Bank Indonesia](https://www.bi.go.id/hargapangan/TabelHarga/PasarTradisionalDaerah). Pembaca beranda dan `/harga` mengakses salinan lokal. Saat MySQL aktif, jalankan migrasi dan periksa hasil pengambilan.
+
+```powershell
+php artisan migrate
+php artisan pihps:sync --from=2026-11-10 --to=2026-11-18 --dry-run
+php artisan pihps:sync --from=2026-11-10 --to=2026-11-18
+```
+
+Tanpa opsi tanggal, sinkronisasi mencakup sembilan hari kalender hingga hari ini di Bali. Opsi `--to` saja mengambil sembilan hari yang berakhir pada tanggal tersebut. Untuk pengisian awal, berikan rentang hingga 90 hari inklusif, misalnya `php artisan pihps:sync --from=2026-08-21 --to=2026-11-18`. Setiap permintaan mencakup maksimal tujuh hari untuk seluruh komoditas. Perintah memberi jeda satu detik antarpermintaan dan mencoba sekali lagi saat koneksi gagal atau server merespons 5xx.
+
+Periksa jumlah pengamatan per komoditas di keluaran perintah. Tanggal kosong dilewati. Peringatan mencantumkan seri dan rentang yang tidak memiliki pengamatan. Jika semua kosong, format berubah, atau salah satu permintaan gagal, riwayat harga sebelumnya tetap tersedia. Grafik menyisakan celah pada tanggal tanpa data.
+
+Tabel `price_sync_runs` menyimpan rentang, waktu, status, pesan, dan jumlah harga baru, berubah, atau tetap. Saat sumber mengoreksi harga, transaksi yang sama memperbarui `market_prices` dan menyimpan nilai lama serta baru di `market_price_revisions`. Mode `--dry-run` menampilkan pratinjau tanpa menulis ke MySQL. Penguncian berbasis berkas mencegah dua impor berjalan bersamaan di instalasi Laragon yang sama.
+
+### Jadwal di Windows
+
+Jadwal Laravel ditetapkan Senin–Jumat pukul **15.00 WITA**. Dari PowerShell di root proyek dengan PHP Laragon pada PATH, jalankan:
+
+```powershell
+.\scripts\install-scheduler.ps1
+php artisan schedule:list --timezone=Asia/Makassar
+Get-ScheduledTaskInfo -TaskName 'HargaTani - Laravel Scheduler'
+```
+
+Task Scheduler memanggil `php artisan schedule:run` setiap menit dengan direktori kerja proyek. Akun Windows perlu dalam keadaan login, komputer terjaga, dan MySQL aktif pada waktunya. Jika jadwal terlewat, jalankan `php artisan pihps:sync` untuk menyusul. Hasil proses impor tersedia di `price_sync_runs` dan log Laravel. Untuk menjeda tugas Windows gunakan `Disable-ScheduledTask -TaskName 'HargaTani - Laravel Scheduler'`.
 
 ## Pengujian
 

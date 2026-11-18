@@ -118,10 +118,10 @@ Tidak ada target akurasi estimasi yang diklaim sebelum evaluasi. Jika data 60 pe
 ### 4.4 Admin: memperbarui data
 
 1. Login sebagai admin; akun admin dibuat melalui seeder, bukan pendaftaran publik.
-2. Mengunduh laporan PIHPS untuk seri dan periode yang dipilih, lalu menyiapkan CSV sesuai template aplikasi.
-3. Mengunggah CSV, melihat pratinjau jumlah baris valid, tidak valid, dan duplikat, lalu memperbaiki kesalahan bila ada.
-4. Mengonfirmasi impor. Jika terdapat baris tidak valid, seluruh impor ditolak tanpa menyimpan sebagian data.
-5. Memeriksa grafik dan tanggal data terakhir; koreksi nilai lama harus dilakukan sebagai pembaruan eksplisit dengan alasan dan riwayat perubahan.
+2. Operator menjalankan pratinjau Artisan untuk tiga seri PIHPS Bali dan memeriksa cakupan tanggal masing-masing.
+3. Mengisi riwayat awal hingga 90 hari kalender ke MySQL. Laravel menjalankan pembaruan sembilan hari terakhir pada hari kerja pukul 15.00 WITA.
+4. Memeriksa hasil sinkronisasi. Kesalahan format atau kegagalan satu permintaan membatalkan seluruh pembaruan harga. Seri tanpa pengamatan memunculkan peringatan cakupan.
+5. Memeriksa grafik, tanggal pengamatan terakhir, dan riwayat koreksi saat PIHPS merevisi harga.
 6. Memoderasi akun atau menonaktifkan produk bila diperlukan. Penonaktifan produk menghentikan pesanan baru; pesanan yang sudah ada tetap dapat ditangani.
 
 ## 5. Kebutuhan Fungsional
@@ -137,9 +137,9 @@ Seluruh kebutuhan di bawah berprioritas wajib untuk MVP, kecuali yang dinyatakan
 
 ### 5.2 Data dan dashboard harga
 
-- **FR-05:** CSV impor memuat tanggal pengamatan, kode komoditas, provinsi, jenis pasar, satuan, harga, dan URL sumber. Batasi 10.000 baris dan 5 MB per berkas.
-- **FR-06:** Validasi tanggal, komoditas yang didukung, wilayah Bali, pasar tradisional, satuan kg, dan harga rupiah positif. Nilai kosong bukan nol. Simpan waktu impor dan admin pengimpor.
-- **FR-07:** Kunci unik menggunakan tanggal, komoditas, wilayah, jenis pasar, dan satuan. Duplikat identik dilewati; nilai berbeda pada kunci sama ditolak dari impor biasa dan memerlukan alur koreksi eksplisit.
+- **FR-05** — Ambil data JSON tabel PIHPS pasar tradisional Bali secara terjadwal atau melalui Artisan. Satu permintaan mencakup maksimal tujuh hari. Satu impor mencakup maksimal 90 hari.
+- **FR-06** — Cocokkan baris rincian dengan nama sumber ketiga komoditas. Validasi tanggal dan rupiah per kg, lewati pengamatan kosong, serta simpan URL sumber, waktu impor, hasil proses, dan peringatan cakupan.
+- **FR-07** — Kunci unik mencakup tanggal, komoditas, wilayah, dan jenis pasar dengan satuan tetap Rp/kg. Impor ulang data identik mempertahankan nilai. Koreksi sumber memperbarui nilai dan mencatat nilai lama, nilai baru, waktu koreksi, dan proses impor dalam satu transaksi.
 - **FR-08:** Dashboard menampilkan harga pengamatan terakhir, perubahan terhadap pengamatan sebelumnya, grafik dengan rentang 14/30/90 hari kalender, sumber, dan tanggal pembaruan. Perubahan belum tersedia bila hanya ada satu pengamatan.
 - **FR-09:** Seri berbagai komoditas, wilayah, atau jenis pasar tidak dicampur. Harga referensi diberi nama “harga eceran pasar tradisional Bali”, bukan “harga jual petani”.
 - **FR-10:** Data yang lebih tua dari tujuh hari kalender diberi indikator data lama. Data kosong menampilkan keadaan kosong dan tidak digantikan data wilayah lain.
@@ -214,7 +214,7 @@ Backend mengatur akses dashboard harga, katalog, CRUD produk, impor admin, trans
 - Chat internal, notifikasi WhatsApp otomatis, email transaksional wajib, dan push notification.
 - Rating, ulasan, program loyalitas, iklan, dan komisi platform.
 - Verifikasi identitas resmi petani, jaminan kualitas produk, dan penyelesaian sengketa komersial.
-- Scraping PIHPS atau sinkronisasi otomatis yang bergantung pada endpoint tidak terdokumentasi.
+- Unggah CSV lewat panel web dan integrasi penyedia harga tambahan.
 - Prediksi musiman, prediksi jangka panjang, model machine learning kompleks, serta AI diagnosis tanaman.
 - Multiwilayah, multibahasa, banyak peran dalam satu akun, dan aplikasi Android/iOS native.
 - Mode offline penuh, sinkronisasi otomatis setelah offline, dan autosave lintas perangkat.
@@ -226,7 +226,7 @@ Backend mengatur akses dashboard harga, katalog, CRUD produk, impor admin, trans
 - Nama produk yang dipakai adalah HargaTani, mengikuti permintaan terbaru dan nama workspace; “Harga Panen” merupakan nama pada pembahasan awal.
 - Durasi enam minggu merupakan baseline perencanaan. Ukuran tim, jadwal kuliah, dan tenggat aktual belum dikonfirmasi; pembagian tugas mengikuti kapasitas pelaksana tanpa menambah scope.
 - Tersedia akses legal terhadap laporan PIHPS untuk keperluan proyek akademik; penggunaan ulang dan atribusi diperiksa sebelum publikasi.
-- Admin melakukan pembaruan data manual pada hari kerja selama masa uji. Aplikasi tidak menjanjikan data real-time.
+- Komputer Laragon aktif, pengguna Windows login, dan MySQL berjalan saat jadwal pembaruan. Operator dapat menjalankan ulang sinkronisasi untuk jadwal yang terlewat.
 - Pengguna memiliki koneksi internet untuk login, penyimpanan, pemesanan, dan AI. Pembayaran serta pengambilan dapat dikoordinasikan langsung.
 - Biaya per panen dan jumlah kg layak jual diisi jujur oleh petani; aplikasi tidak memverifikasi pembukuan tersebut.
 
@@ -234,6 +234,7 @@ Backend mengatur akses dashboard harga, katalog, CRUD produk, impor admin, trans
 
 | Risiko | Dampak | Mitigasi |
 | --- | --- | --- |
+| Endpoint tabel PIHPS berubah atau gagal diakses | Sinkronisasi terhenti | Validasi respons, catat kegagalan, pertahankan data terakhir beserta tanggal, lalu periksa kembali format sumber |
 | Riwayat salah satu komoditas Bali tidak tersedia | Dashboard/evaluasi tidak lengkap | Periksa data di minggu pertama; rilis hanya komoditas yang memiliki seri valid dan catat pengurangan cakupan; jangan membuat data sintetis seolah data resmi |
 | Harga eceran disamakan dengan harga petani | Saran dianggap harga wajib atau jaminan keuntungan | Label eceran, tanggal dan sumber terlihat; harga usulan berasal dari biaya; keputusan akhir tetap pada petani |
 | Data jarang atau terlambat | Estimasi tidak representatif | Tampilkan data lama/kosong, syarat estimasi, jumlah pengamatan, dan periode sebenarnya |
@@ -270,7 +271,7 @@ Referensi resmi:
 1. **Validasi sumber dan bekukan scope.** Periksa tiga seri komoditas Bali, unduh sampel dan riwayat, pastikan penamaan/satuan konsisten, serta konfirmasi ketentuan penggunaan. Catat komoditas yang benar-benar dapat didukung dan batas dataset evaluasi.
 2. **Siapkan fondasi.** Buat proyek Laravel dengan starter kit Livewire, konfigurasi MySQL di Laragon, inisialisasi Git, `.env.example`, migrations, seeders peran/admin, serta autentikasi dan policies. Catat versi runtime dan lockfile.
 3. **Rancang database dan antarmuka.** Tetapkan relasi minimum bagian 5.6, kunci unik seri harga, representasi uang/kuantitas, transisi pesanan, dan wireframe responsif dashboard, etalase, formulir produk, serta panel admin.
-4. **Bangun jalur data harga.** Buat template CSV, pratinjau/validasi impor, penanganan duplikat, koreksi dengan audit, dashboard, grafik, status data lama/kosong, kalkulator, dan estimasi backend.
+4. **Bangun jalur data harga.** Implementasikan sinkronisasi PIHPS terjadwal, pratinjau Artisan, validasi impor, penanganan duplikat, koreksi dengan audit, dashboard, grafik, status data lama/kosong, kalkulator, dan estimasi backend.
 5. **Bangun penjualan tanpa ketergantungan AI.** Implementasikan CRUD produk/foto, katalog/filter, snapshot harga pesanan, otorisasi, alokasi stok atomik, pembatalan, penyelesaian, dan riwayat status.
 6. **Tambahkan integrasi AI.** Bangun satu service dan endpoint tiga tugas, sumber konteks dari backend, prompt terpisah, label, penyuntingan draf, catatan privat, timeout/rate limit, serta fallback manual. Gunakan mock penyedia saat menguji kegagalan.
 7. **Lakukan verifikasi.** Jalankan unit test kalkulator/estimasi, feature test akses dan impor, uji stok bersamaan dengan MySQL, uji kegagalan AI, pemeriksaan responsif/keamanan, pengukuran performa, dan evaluasi MAE tanpa memakai data masa depan.
