@@ -13,7 +13,7 @@
         <x-skip-link />
         <flux:sidebar sticky collapsible="mobile" class="w-60 border-e border-line bg-surface">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route($dashboardRoute) }}" wire:navigate />
+                <x-landing-brand :href="route($dashboardRoute)" aria-label="HargaTani, dashboard" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
@@ -48,7 +48,7 @@
         <!-- Mobile User Menu -->
         <flux:header class="border-b border-line bg-surface lg:hidden">
             <flux:sidebar.toggle class="min-h-11 min-w-11" icon="bars-2" label="Buka navigasi" />
-            <x-app-logo :href="route($dashboardRoute)" />
+            <x-landing-brand :href="route($dashboardRoute)" aria-label="HargaTani, dashboard" />
 
             <flux:spacer />
 

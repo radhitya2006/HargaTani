@@ -17,7 +17,8 @@ class MarketPriceTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Belum ada harga dari PIHPS')->assertSee('Data contoh');
         $this->get('/harga?komoditas[]=tomat&periode=1000')->assertOk()
             ->assertViewHas('commodity', 'bawang-merah')->assertViewHas('days', 14)
-            ->assertSee('Belum ada harga untuk Bawang Merah Ukuran Sedang')->assertDontSee('data-market-chart');
+            ->assertSee('Belum ada harga untuk Bawang Merah Ukuran Sedang')->assertDontSee('data-market-chart')
+            ->assertSee('Data belum cukup. Tersedia 0 dari 7 pengamatan');
         $this->get('/harga?komoditas=cabai-merah&periode=30')
             ->assertRedirect(route('prices.index', ['komoditas' => 'cabai-merah-besar', 'periode' => 30]));
     }
@@ -47,14 +48,38 @@ class MarketPriceTest extends TestCase
         $this->travelTo(CarbonImmutable::parse('2026-11-17 23:59', 'Asia/Makassar'));
         $this->get('/harga')->assertOk()->assertSee('Belum ada pengamatan pembanding')->assertViewHas('isStale', false);
         $this->travelTo(CarbonImmutable::parse('2026-11-18 00:01', 'Asia/Makassar'));
-        $this->get('/harga')->assertSee('lebih dari tujuh hari kalender')->assertSee('1 pengamatan');
+        $this->get('/harga')->assertSee('lebih dari tujuh hari kalender')->assertSee('1 pengamatan')
+            ->assertSee('Data belum mutakhir.');
         $this->get('/')->assertSee('Data terakhir berusia lebih dari tujuh hari');
     }
 
-    private function addPrice(string $slug, string $date, int $amount): void
+    public function test_estimate_uses_the_latest_seven_valid_bali_observations_for_every_chart_period(): void
+    {
+        $today = CarbonImmutable::parse('2026-11-18 00:01', 'Asia/Makassar');
+        $this->travelTo($today);
+        $commodity = 'cabai-rawit-merah';
+        foreach ([0 => 42001, 2 => 44000, 4 => 40000, 6 => 38000, 9 => 37000, 17 => 35000, 23 => 34000, 29 => 60000] as $age => $price) {
+            $this->addPrice($commodity, $today->subDays($age)->toDateString(), $price);
+        }
+        $this->addPrice($commodity, '2026-11-19', 90000);
+        $this->addPrice($commodity, '2026-11-17', 0);
+        $this->addPrice('bawang-merah', '2026-11-17', 75000);
+        $this->addPrice($commodity, '2026-11-17', 80000, province: 'Jawa Timur');
+        $this->addPrice($commodity, '2026-11-17', 85000, marketType: 'modern');
+
+        foreach ([14, 30, 90] as $days) {
+            $this->get("/harga?komoditas=$commodity&periode=$days")->assertOk()
+                ->assertSee('Estimasi harga pasar pada pengamatan berikutnya')
+                ->assertSee('Rp38.572')
+                ->assertSee('Rata-rata 7 pengamatan PIHPS terbaru dalam 30 hari kalender terakhir.')
+                ->assertSee('Tanggal acuan <time datetime="2026-11-18">18 November 2026</time>', false);
+        }
+    }
+
+    private function addPrice(string $slug, string $date, int $amount, string $province = 'Bali', string $marketType = 'tradisional'): void
     {
         DB::table('market_prices')->insert([
-            'commodity' => $slug, 'province' => 'Bali', 'market_type' => 'tradisional',
+            'commodity' => $slug, 'province' => $province, 'market_type' => $marketType,
             'observed_on' => $date, 'price_per_kg' => $amount, 'imported_at' => now(),
             'source_url' => PihpsBaliPrices::SOURCE_URL,
         ]);

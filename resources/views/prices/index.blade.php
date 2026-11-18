@@ -1,3 +1,5 @@
+@use('App\Support\MarketPriceEstimate')
+
 @php
     $name = $commodities[$commodity]['name'];
     $formatPrice = fn (int $amount) => 'Rp'.number_format($amount, 0, ',', '.');
@@ -80,7 +82,24 @@
                 <dd class="market-note">Terendah hingga tertinggi per kg</dd>
             </div>
         </dl>
+        @endif
 
+        <section class="ht-card market-history space-y-2" aria-labelledby="market-estimate-title">
+            <h2 id="market-estimate-title" class="font-semibold">Estimasi harga pasar pada pengamatan berikutnya</h2>
+            @if ($estimate->pricePerKg !== null)
+                <p class="text-2xl font-bold text-estimate tabular-nums">{{ $formatPrice($estimate->pricePerKg) }} <small class="text-sm font-medium">/kg</small></p>
+                <p class="market-note">Rata-rata {{ MarketPriceEstimate::OBSERVATIONS }} pengamatan PIHPS terbaru dalam {{ MarketPriceEstimate::WINDOW_DAYS }} hari kalender terakhir.</p>
+            @elseif ($estimate->isStale)
+                <p class="text-sm text-warning">Data belum mutakhir. Pengamatan terakhir berusia lebih dari {{ MarketPriceEstimate::MAX_AGE_DAYS }} hari kalender.</p>
+            @else
+                <p class="market-note">Data belum cukup. Tersedia {{ $estimate->observationCount }} dari {{ MarketPriceEstimate::OBSERVATIONS }} pengamatan yang dibutuhkan dalam {{ MarketPriceEstimate::WINDOW_DAYS }} hari kalender terakhir.</p>
+            @endif
+            @if ($estimate->referenceDate !== null)
+                <p class="market-note">Tanggal acuan <time datetime="{{ $estimate->referenceDate->toDateString() }}">{{ $estimate->referenceDate->translatedFormat('j F Y') }}</time></p>
+            @endif
+        </section>
+
+        @if ($latest !== null)
         <section class="ht-card market-history" aria-labelledby="market-history-title">
             <header class="market-history-heading">
                 <div>

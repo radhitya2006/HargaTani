@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\PihpsBaliPrices;
+use App\Support\MarketPriceEstimate;
 use App\Support\MarketPriceSeries;
 use App\Support\PriceCommodities;
 use Illuminate\Http\RedirectResponse;
@@ -32,6 +33,7 @@ final class MarketPriceController extends Controller
             'commodities' => PriceCommodities::ALL, 'commodity' => $commodity,
             'periods' => PriceCommodities::PERIODS, 'days' => $days,
             'minimum' => $prices ? min($prices) : null, 'maximum' => $prices ? max($prices) : null,
+            'estimate' => MarketPriceEstimate::forCommodity($commodity),
             'sourceUrl' => PihpsBaliPrices::SOURCE_URL,
         ]);
     }
