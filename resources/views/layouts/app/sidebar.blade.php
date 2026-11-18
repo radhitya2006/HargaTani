@@ -1,3 +1,9 @@
+@php
+    $role = auth()->user()->role;
+    $roleDashboard = $role->value.'.dashboard';
+    $isPetani = $role === \App\Enums\Role::Petani;
+    $dashboardRoute = $isPetani ? $roleDashboard : 'dashboard';
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -7,17 +13,19 @@
         <x-skip-link />
         <flux:sidebar sticky collapsible="mobile" class="w-60 border-e border-line bg-surface">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route($dashboardRoute) }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        Ringkasan
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route(auth()->user()->role->value.'.dashboard')" :current="request()->routeIs(auth()->user()->role->value.'.dashboard')" wire:navigate>
-                        Dashboard {{ auth()->user()->role->label() }}
+                    @unless ($isPetani)
+                        <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                            Ringkasan
+                        </flux:sidebar.item>
+                    @endunless
+                    <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route($roleDashboard)" :current="request()->routeIs($roleDashboard)" wire:navigate>
+                        Dashboard {{ $role->label() }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
                         Pengaturan akun
@@ -27,15 +35,20 @@
 
             <flux:spacer />
 
-
-
-            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+            <div class="grid gap-2">
+                <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+                @if ($isPetani)
+                    <a class="ht-button ht-primary" href="{{ route('home') }}">
+                        Kembali ke Beranda <flux:icon.arrow-up-right class="size-4" />
+                    </a>
+                @endif
+            </div>
         </flux:sidebar>
 
         <!-- Mobile User Menu -->
         <flux:header class="border-b border-line bg-surface lg:hidden">
             <flux:sidebar.toggle class="min-h-11 min-w-11" icon="bars-2" label="Buka navigasi" />
-            <x-app-logo :href="route('dashboard')" />
+            <x-app-logo :href="route($dashboardRoute)" />
 
             <flux:spacer />
 

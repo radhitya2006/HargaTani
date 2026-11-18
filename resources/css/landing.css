@@ -145,7 +145,7 @@
 .ht-brand-icon i::after { right: -.04rem; top: .07rem; border-radius: 75% 1px 75% 1px; box-shadow: -2px 7px 0 -3px white; }
 .ht-link:hover, .ht-footer nav a:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: .4em; }
 .ht-actions { gap: 1rem; font-size: .875rem; font-weight: 600; }
-.ht-button, .ht-upcoming { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; border: 1px solid var(--color-line); border-radius: .65rem; padding: .82rem 1.25rem; min-height: 44px; background: white; font-weight: 650; font-size: .91rem; }
+.ht-button { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; border: 1px solid var(--color-line); border-radius: .65rem; padding: .82rem 1.25rem; min-height: 44px; background: white; font-weight: 650; font-size: .91rem; }
 .ht-button:hover { background: var(--soft); }
 .ht-primary { color: white; background: var(--color-primary); border-color: var(--color-primary); }
 .ht-primary:hover { background: var(--color-primary-hover); }
@@ -208,7 +208,6 @@
 .ht-calc { padding-block: 1.7rem; background: var(--soft); border-block: 1px solid var(--color-line); }
 .ht-calc-copy { gap: 1.15rem; }
 .ht-calc-copy p { margin-top: .3rem; }
-.ht-upcoming { font-weight: 500; font-size: .78rem; color: var(--muted); }
 .ht-product { overflow: hidden; }
 .ht-product-placeholder { aspect-ratio: 4 / 3; background: var(--tint); display: flex; align-items: start; justify-content: space-between; padding: .8rem; }
 .ht-product-placeholder small { border-radius: .35rem; padding: .25rem .5rem; background: #fffdf3; color: #486134; font-size: .65rem; }

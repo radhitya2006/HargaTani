@@ -21,7 +21,10 @@
                     <p>Harga eceran pasar tradisional Bali</p>
                 </div>
             </div>
-            <a class="market-demo" href="{{ $sourceUrl }}"><span aria-hidden="true"></span> PIHPS Bank Indonesia</a>
+            <div class="flex flex-wrap items-center gap-2">
+                <a class="market-demo" href="{{ $sourceUrl }}"><span aria-hidden="true"></span> PIHPS Bank Indonesia</a>
+                <a class="ht-button" href="{{ route('calculator.show', ['komoditas' => $commodity]) }}"><flux:icon.calculator class="size-4" /> Hitung harga jual</a>
+            </div>
         </header>
 
         @if ($isStale)

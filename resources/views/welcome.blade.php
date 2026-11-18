@@ -72,7 +72,7 @@
     <section class="ht-calc" id="kalkulator" aria-label="Kalkulator harga">
         <div class="ht-wrap ht-between">
             <div class="ht-calc-copy"><span class="ht-icon"><flux:icon.calculator /></span><div><h3>Panen sudah siap. Harga jualnya sudah tepat?</h3><p>Hitung biaya dan tentukan tambahan keuntungan per kilogram.</p></div></div>
-            <span class="ht-upcoming">Kalkulator harga · Segera hadir</span>
+            <a class="ht-button ht-primary" href="{{ route('calculator.show') }}">Buka kalkulator <span aria-hidden="true">→</span></a>
         </div>
     </section>
 
