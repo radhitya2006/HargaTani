@@ -77,7 +77,7 @@ php artisan schedule:list --timezone=Asia/Makassar
 Get-ScheduledTaskInfo -TaskName 'HargaTani - Laravel Scheduler'
 ```
 
-Task Scheduler memanggil `php artisan schedule:run` setiap menit dengan direktori kerja proyek. Akun Windows perlu dalam keadaan login, komputer terjaga, dan MySQL aktif pada waktunya. Jika jadwal terlewat, jalankan `php artisan pihps:sync` untuk menyusul. Hasil proses impor tersedia di `price_sync_runs` dan log Laravel. Untuk menjeda tugas Windows gunakan `Disable-ScheduledTask -TaskName 'HargaTani - Laravel Scheduler'`.
+Task Scheduler menjalankan `artisan schedule:run` setiap menit melalui `php-win.exe` di direktori proyek agar jendela konsol tidak muncul. Jalankan kembali skrip pemasangan untuk memperbarui tugas HargaTani yang masih memakai `php.exe`. Akun Windows perlu dalam keadaan login, komputer terjaga, dan MySQL aktif pada waktunya. Jika jadwal terlewat, jalankan `php artisan pihps:sync` untuk menyusul. Hasil proses impor tersedia di `price_sync_runs` dan log Laravel. Untuk menjeda tugas Windows gunakan `Disable-ScheduledTask -TaskName 'HargaTani - Laravel Scheduler'`.
 
 ## Pengujian
 
