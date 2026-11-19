@@ -21,10 +21,13 @@
         </div>
 
         <main id="main-content" tabindex="-1" class="ht-auth-main">
-            <a href="{{ route('home') }}" class="ht-auth-back">
-                <flux:icon.arrow-left class="size-4" />
-                Kembali ke beranda
-            </a>
+            <div class="flex items-center justify-between gap-3">
+                <a href="{{ route('home') }}" class="ht-auth-back">
+                    <flux:icon.arrow-left class="size-4" />
+                    Kembali ke beranda
+                </a>
+                <x-theme-toggle compact />
+            </div>
 
             <div class="ht-auth-content">
                 <header class="ht-auth-heading">

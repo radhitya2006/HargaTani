@@ -25,11 +25,32 @@
             <div class="ht-benefits"><span>✓ &nbsp; Harga lebih transparan</span><span>Terhubung dengan petani</span></div>
         </div>
         <div class="ht-hero-art">
-            <div class="ht-hero-placeholder">
-                <div><small>Tabanan, Bali</small><p>Tumbuh dari tanah yang baik.</p></div>
+            <div class="ht-hero-photo">
+                <img src="{{ asset('images/beranda-petani.webp') }}" alt="Petani tersenyum sambil memegang bulir padi di sawah" width="1448" height="1086" fetchpriority="high">
             </div>
-            <div class="ht-float ht-float-top"><span class="ht-icon"><flux:icon.user-circle /></span><div><strong>Dari petani, langsung.</strong><small>Lebih dekat dengan sumbernya</small></div></div>
-            <div class="ht-float ht-float-bottom"><span class="ht-icon"><flux:icon.sun /></span><div><strong>Panen hari ini, peluang esok.</strong><small>Langkah kecil untuk pertanian yang lebih baik</small></div></div>
+            <a class="ht-hero-card ht-hero-card--farmer" href="{{ route('catalog.index') }}">
+                <span class="ht-icon" aria-hidden="true"><flux:icon.user-circle /></span>
+                <span class="ht-hero-card-copy">
+                    <strong>Dari petani, langsung.</strong>
+                    <small>Jelajahi hasil panen petani</small>
+                </span>
+                <span class="ht-hero-card-arrow" aria-hidden="true"><flux:icon.arrow-up-right /></span>
+            </a>
+            <a class="ht-hero-card ht-hero-card--location" href="{{ route('catalog.index', ['lokasi' => 'Tabanan']) }}">
+                <span class="ht-hero-card-copy">
+                    <small>Lihat panen di Tabanan, Bali</small>
+                    <strong>Tumbuh dari tanah yang baik.</strong>
+                </span>
+                <span class="ht-hero-card-arrow" aria-hidden="true"><flux:icon.arrow-up-right /></span>
+            </a>
+            <a class="ht-hero-card ht-hero-card--market" href="{{ route('prices.index') }}">
+                <span class="ht-icon" aria-hidden="true"><flux:icon.sun /></span>
+                <span class="ht-hero-card-copy">
+                    <strong>Panen hari ini, peluang esok.</strong>
+                    <small>Bandingkan harga pasar</small>
+                </span>
+                <span class="ht-hero-card-arrow" aria-hidden="true"><flux:icon.arrow-up-right /></span>
+            </a>
         </div>
     </section>
     <div class="ht-demo-bar"><div class="ht-wrap ht-between">
@@ -101,7 +122,7 @@
     <section id="cara-kerja" class="ht-wrap ht-steps" aria-labelledby="steps-title">
         <p class="ht-eyebrow">Sederhana, dari awal hingga panen</p>
         <h2 id="steps-title">Tiga langkah, lebih banyak kepastian.</h2>
-        <ol>
+        <ol class="ht-home-cards">
             @foreach ($steps as [$icon, $label, $description])
                 <li class="ht-card"><div class="ht-between"><span class="ht-icon"><flux:icon :name="$icon" /></span><span aria-hidden="true" class="ht-index">0{{ $loop->iteration }}</span></div><h3>{{ $label }}</h3><p>{{ $description }}</p></li>
             @endforeach

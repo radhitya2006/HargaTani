@@ -27,6 +27,7 @@
     --color-harvest: #f4c95d;
     --color-success: #166534;
     --color-warning: #92400e;
+    --color-warning-soft: #fffbeb;
     --color-danger: #b42318;
     --color-ai: #4338ca;
     --color-estimate: #2563eb;
@@ -61,6 +62,24 @@
 @layer base {
     :root {
         color-scheme: light;
+    }
+
+    :root.dark {
+        --color-primary: #a6d089;
+        --color-primary-hover: #badb9d;
+        --color-primary-soft: #253b2c;
+        --color-background: #131c16;
+        --color-surface: #1d2b21;
+        --color-ink: #edf3eb;
+        --color-ink-muted: #b3c1b3;
+        --color-line: #3a4b3d;
+        --color-control-line: #728775;
+        --color-success: #a3d69b;
+        --color-warning: #f4c983;
+        --color-warning-soft: #3a2d1d;
+        --color-danger: #ffaba5;
+        --color-estimate: #c2b5ff;
+        --color-accent-foreground: #152419;
     }
 
     body {

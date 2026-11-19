@@ -5,30 +5,15 @@
 </head>
 <body class="ht-landing" id="beranda">
     <x-skip-link />
-    <aside class="ht-sidebar ht-sidebar-desktop" aria-label="Menu HargaTani">
-        <x-landing-brand />
-        <x-landing-navigation />
-    </aside>
-
-    <header class="ht-mobile-header">
-        <x-landing-brand />
-        <button type="button" class="ht-button" id="ht-menu-trigger" aria-haspopup="dialog" aria-controls="ht-menu" aria-expanded="false">
-            <flux:icon.bars-3 class="size-5" />
-            Menu
-        </button>
+    <header class="ht-site-header">
+        <x-sidebar-menu>
+            <x-slot:brand>
+                <x-landing-brand />
+            </x-slot:brand>
+            <x-landing-navigation />
+        </x-sidebar-menu>
+        <x-theme-toggle compact class="ms-auto" />
     </header>
-
-    <dialog class="ht-sidebar ht-menu-dialog" id="ht-menu" aria-label="Menu HargaTani">
-        <div class="ht-menu-heading">
-            <x-landing-brand />
-            <form method="dialog">
-                <button type="submit" class="ht-menu-close" aria-label="Tutup menu" autofocus>
-                    <flux:icon.x-mark class="size-5" />
-                </button>
-            </form>
-        </div>
-        <x-landing-navigation />
-    </dialog>
 
     <div class="ht-landing-content">
         <main id="main-content" tabindex="-1">{{ $slot }}</main>

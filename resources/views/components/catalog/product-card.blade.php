@@ -9,7 +9,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <small>{{ $product->district }}, Bali</small>
                 @if ($product->isSoldOut())
-                    <span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-warning">Habis</span>
+                    <span class="rounded-full bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning">Habis</span>
                 @endif
             </div>
 

@@ -2,11 +2,22 @@
     --auth-forest: #20472f;
     --auth-muted: #626f5b;
     --auth-link: #42652f;
+    --auth-control-line: #a9b3a2;
+    --auth-placeholder: #6b7468;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-height: 100svh;
     background: #f8f6ef;
     color: var(--auth-forest);
+}
+
+.dark .ht-auth {
+    --auth-forest: var(--color-ink);
+    --auth-muted: var(--color-ink-muted);
+    --auth-link: var(--color-primary);
+    --auth-control-line: var(--color-control-line);
+    --auth-placeholder: var(--color-ink-muted);
+    background: var(--color-background);
 }
 
 .ht-auth-story {
@@ -19,7 +30,7 @@
     padding: 1.25rem clamp(2rem, 3.75vw, 4rem) clamp(3.5rem, 14vh, 7rem);
     overflow: hidden;
     isolation: isolate;
-    background: var(--auth-forest);
+    background: #20472f;
     color: #f7f3df;
 }
 
@@ -138,8 +149,8 @@
 .ht-auth-form input[data-flux-control]:not([type='checkbox']),
 .ht-auth-form select[data-flux-control] {
     min-height: 3.75rem;
-    border-color: #a9b3a2;
-    background-color: #fff;
+    border-color: var(--auth-control-line);
+    background-color: var(--color-surface);
     color: var(--color-ink);
     padding-inline-start: 1rem;
     font-size: clamp(1rem, 1.25vw, 1.175rem);
@@ -147,10 +158,10 @@
 }
 
 .ht-auth-form input::placeholder {
-    color: #6b7468;
+    color: var(--auth-placeholder);
 }
 
-.ht-auth-form [data-flux-control][aria-invalid='true'] {
+.ht-auth-form :is(input, select)[data-flux-control][aria-invalid='true'] {
     border-color: var(--color-danger);
 }
 

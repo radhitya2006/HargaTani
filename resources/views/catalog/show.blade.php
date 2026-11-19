@@ -19,7 +19,7 @@
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <p class="text-2xl font-bold break-all text-primary tabular-nums">Rp{{ number_format($product->price_per_kg, 0, ',', '.') }} <small class="text-sm font-medium text-ink-muted">/kg</small></p>
                     @if ($product->isSoldOut())
-                        <span class="rounded-full bg-amber-50 px-3 py-1.5 text-sm font-semibold text-warning">Stok habis</span>
+                        <span class="rounded-full bg-warning-soft px-3 py-1.5 text-sm font-semibold text-warning">Stok habis</span>
                     @else
                         <span class="rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-success">
                             Tersedia {{ str_replace('.', ',', $product->stock_kg) }} kg

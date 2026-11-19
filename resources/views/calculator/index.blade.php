@@ -29,7 +29,7 @@
                 <div class="grid gap-1.5">
                     <label for="komoditas" class="text-sm font-semibold">Komoditas</label>
                     <select id="komoditas" name="komoditas" required
-                        class="min-h-11 w-full rounded-control border border-control-line bg-white px-3"
+                        class="min-h-11 w-full rounded-control border border-control-line bg-surface px-3"
                         @if ($validationErrors?->has('komoditas')) aria-invalid="true" aria-describedby="komoditas-error" @endif>
                         <option value="" disabled @selected(! isset($commodities[$commodity]))>Pilih komoditas</option>
                         @foreach ($commodities as $slug => $item)
@@ -47,7 +47,7 @@
                         <label for="{{ $name }}" class="text-sm font-semibold">{{ $label }}</label>
                         <input id="{{ $name }}" name="{{ $name }}" type="text" inputmode="{{ $inputMode }}" required
                             value="{{ $inputs[$name] ?? '' }}"
-                            class="min-h-11 w-full rounded-control border border-control-line bg-white px-3"
+                            class="min-h-11 w-full rounded-control border border-control-line bg-surface px-3"
                             aria-describedby="{{ $name }}-hint{{ $hasError ? ' '.$name.'-error' : '' }}"
                             @if ($hasError) aria-invalid="true" @endif>
                         <p id="{{ $name }}-hint" class="text-sm text-ink-muted">{{ $hint }}</p>
@@ -105,7 +105,7 @@
                         <label for="harga-pilihan" class="text-sm font-semibold">Harga jual pilihan Anda (Rp/kg)</label>
                         <input id="harga-pilihan" type="number" inputmode="numeric" min="0" step="1"
                             value="{{ $result['suggestedPrice'] }}"
-                            class="min-h-11 w-full rounded-control border border-control-line bg-white px-3"
+                            class="min-h-11 w-full rounded-control border border-control-line bg-surface px-3"
                             aria-describedby="harga-pilihan-hint">
                         <p id="harga-pilihan-hint" class="text-sm text-ink-muted">Sesuaikan harga dengan kebutuhan Anda. Isian ini tidak disimpan.</p>
                     </div>

@@ -12,60 +12,55 @@
     </head>
     <body class="min-h-svh">
         <x-skip-link />
-        <flux:sidebar sticky collapsible="mobile" class="w-60 border-e border-line bg-surface">
-            <flux:sidebar.header>
-                <x-landing-brand :href="route($dashboardRoute)" aria-label="HargaTani, dashboard" wire:navigate />
-                <flux:sidebar.collapse class="lg:hidden" />
-            </flux:sidebar.header>
+        <flux:header class="ht-site-header">
+            <x-sidebar-menu>
+                <x-slot:brand>
+                    <x-landing-brand :href="route($dashboardRoute)" aria-label="HargaTani, dashboard" wire:navigate />
+                </x-slot:brand>
 
-            <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    @if ($isAdmin)
-                        <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                            Ringkasan
+                <flux:sidebar.nav aria-label="Navigasi utama">
+                    <flux:sidebar.group :heading="__('Platform')" class="grid">
+                        @if ($isAdmin)
+                            <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                                Ringkasan
+                            </flux:sidebar.item>
+                        @endif
+                        <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route($roleDashboard)" :current="request()->routeIs($roleDashboard)" wire:navigate>
+                            Dashboard {{ $role->label() }}
                         </flux:sidebar.item>
-                    @endif
-                    <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route($roleDashboard)" :current="request()->routeIs($roleDashboard)" wire:navigate>
-                        Dashboard {{ $role->label() }}
-                    </flux:sidebar.item>
-                    @if ($isPetani)
-                        <flux:sidebar.item icon="cube" class="min-h-11" :href="route('petani.products.index')" :current="request()->routeIs('petani.products.*')" wire:navigate>
-                            Produk Saya
+                        @if ($isPetani)
+                            <flux:sidebar.item icon="cube" class="min-h-11" :href="route('petani.products.index')" :current="request()->routeIs('petani.products.*')" wire:navigate>
+                                Produk Saya
+                            </flux:sidebar.item>
+                        @elseif ($role === \App\Enums\Role::Pembeli)
+                            <flux:sidebar.item icon="shopping-bag" class="min-h-11" :href="route('catalog.index')">
+                                Hasil Panen
+                            </flux:sidebar.item>
+                        @endif
+                        <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
+                            Pengaturan akun
                         </flux:sidebar.item>
-                    @elseif ($role === \App\Enums\Role::Pembeli)
-                        <flux:sidebar.item icon="shopping-bag" class="min-h-11" :href="route('catalog.index')">
-                            Hasil Panen
-                        </flux:sidebar.item>
-                    @endif
-                    <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
-                        Pengaturan akun
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
-            </flux:sidebar.nav>
+                    </flux:sidebar.group>
+                </flux:sidebar.nav>
 
-            <flux:spacer />
-
-            <div class="grid gap-2">
-                <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
                 @unless ($isAdmin)
-                    <a class="ht-button ht-primary" href="{{ route('home') }}">
-                        Kembali ke Beranda <flux:icon.arrow-up-right class="size-4" />
-                    </a>
+                    <div class="ht-sidebar-account">
+                        <a class="ht-button ht-primary" href="{{ route('home') }}">
+                            Kembali ke Beranda <flux:icon.arrow-up-right class="size-4" />
+                        </a>
+                    </div>
                 @endunless
-            </div>
-        </flux:sidebar>
-
-        <!-- Mobile User Menu -->
-        <flux:header class="border-b border-line bg-surface lg:hidden">
-            <flux:sidebar.toggle class="min-h-11 min-w-11" icon="bars-2" label="Buka navigasi" />
-            <x-landing-brand :href="route($dashboardRoute)" aria-label="HargaTani, dashboard" />
+            </x-sidebar-menu>
 
             <flux:spacer />
 
-            <flux:dropdown position="top" align="end">
+            <x-theme-toggle compact />
+            <flux:dropdown position="bottom" align="end">
                 <flux:profile
                     :initials="auth()->user()->initials()"
                     icon-trailing="chevron-down"
+                    aria-label="Menu akun"
+                    data-test="sidebar-menu-button"
                 />
 
                 <flux:menu>
