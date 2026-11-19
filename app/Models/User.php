@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
  * @property string $password
  * @property Role $role
  * @property bool $is_active
+ * @property string|null $district
+ * @property string|null $transaction_contact
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -28,7 +30,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  */
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token', 'transaction_contact'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

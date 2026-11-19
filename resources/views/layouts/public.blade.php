@@ -39,7 +39,7 @@
                     <nav aria-label="Jelajahi">
                         <strong>Jelajahi</strong>
                         <a href="{{ route('prices.index') }}">Harga Pasar</a>
-                        <a href="{{ route('home') }}#hasil-panen">Hasil Panen</a>
+                        <a href="{{ route('catalog.index') }}">Hasil Panen</a>
                         <a href="{{ route('home') }}#cara-kerja">Cara kerja</a>
                     </nav>
                     <nav aria-label="Akun"><strong>Akun</strong>
@@ -50,7 +50,7 @@
                             <a href="{{ route('login') }}">Masuk</a><a href="{{ route('register') }}">Daftar</a>
                         @endauth
                     </nav>
-                    <aside class="ht-demo-note"><strong>Mode demonstrasi</strong><p>Harga pasar bersumber dari PIHPS. Penawaran hasil panen dan stok menggunakan data contoh.</p></aside>
+                    <aside class="ht-demo-note"><strong>Sumber data</strong><p>Harga pasar bersumber dari PIHPS. Harga jual dan stok diisi oleh petani.</p></aside>
                 </div>
                 <small class="ht-copyright">© {{ now()->year }} HargaTani. Tumbuh bersama, dari Bali.</small>
             </div>

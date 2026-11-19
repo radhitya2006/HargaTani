@@ -27,6 +27,15 @@
                     <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route($roleDashboard)" :current="request()->routeIs($roleDashboard)" wire:navigate>
                         Dashboard {{ $role->label() }}
                     </flux:sidebar.item>
+                    @if ($isPetani)
+                        <flux:sidebar.item icon="cube" class="min-h-11" :href="route('petani.products.index')" :current="request()->routeIs('petani.products.*')" wire:navigate>
+                            Produk Saya
+                        </flux:sidebar.item>
+                    @elseif ($role === \App\Enums\Role::Pembeli)
+                        <flux:sidebar.item icon="shopping-bag" class="min-h-11" :href="route('catalog.index')">
+                            Hasil Panen
+                        </flux:sidebar.item>
+                    @endif
                     <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
                         Pengaturan akun
                     </flux:sidebar.item>

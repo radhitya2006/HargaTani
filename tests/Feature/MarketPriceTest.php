@@ -14,7 +14,7 @@ class MarketPriceTest extends TestCase
 
     public function test_empty_prices_and_invalid_filters(): void
     {
-        $this->get('/')->assertOk()->assertSee('Belum ada harga dari PIHPS')->assertSee('Data contoh');
+        $this->get('/')->assertOk()->assertSee('Belum ada harga dari PIHPS')->assertSee('Belum ada hasil panen yang diterbitkan');
         $this->get('/harga?komoditas[]=tomat&periode=1000')->assertOk()
             ->assertViewHas('commodity', 'bawang-merah')->assertViewHas('days', 14)
             ->assertSee('Belum ada harga untuk Bawang Merah Ukuran Sedang')->assertDontSee('data-market-chart')

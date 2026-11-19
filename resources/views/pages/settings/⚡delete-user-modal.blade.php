@@ -1,8 +1,11 @@
 <?php
 
 use App\Concerns\PasswordValidationRules;
+use App\Enums\Role;
 use App\Livewire\Actions\Logout;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 new class extends Component {
@@ -19,7 +22,10 @@ new class extends Component {
             'password' => $this->currentPasswordRules(),
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = tap(Auth::user(), $logout(...));
+        if ($user->delete() && $user->role === Role::Petani) {
+            Storage::disk('local')->deleteDirectory(Product::photoDirectory($user->id));
+        }
 
         $this->redirect('/', navigate: true);
     }

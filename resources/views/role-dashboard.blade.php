@@ -3,9 +3,20 @@
         <x-ui.page-heading :title="'Dashboard '.$role->label()" :description="'Selamat datang, '.auth()->user()->name.'.'" />
         @if ($role === \App\Enums\Role::Petani)
             <x-ui.panel class="max-w-form">
+                <h2 class="text-xl font-semibold">Produk Saya</h2>
+                <p class="mt-2 text-ink-muted">Kelola penawaran hasil panen, foto, harga, dan stok.</p>
+                <flux:button class="mt-5" :href="route('petani.products.index')" wire:navigate>Kelola produk</flux:button>
+            </x-ui.panel>
+            <x-ui.panel class="max-w-form">
                 <h2 class="text-xl font-semibold">Kalkulator Harga Jual</h2>
                 <p class="mt-2 text-ink-muted">Hitung biaya per kilogram dan bandingkan harga usulan dengan harga pasar.</p>
                 <flux:button class="mt-5" :href="route('calculator.show')">Buka kalkulator</flux:button>
+            </x-ui.panel>
+        @elseif ($role === \App\Enums\Role::Pembeli)
+            <x-ui.panel class="max-w-form">
+                <h2 class="text-xl font-semibold">Hasil Panen</h2>
+                <p class="mt-2 text-ink-muted">Temukan hasil panen dari petani berdasarkan komoditas dan lokasi.</p>
+                <flux:button class="mt-5" :href="route('catalog.index')">Buka etalase</flux:button>
             </x-ui.panel>
         @endif
         <x-ui.panel class="max-w-form">
