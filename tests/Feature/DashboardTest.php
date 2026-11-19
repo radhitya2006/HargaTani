@@ -17,13 +17,13 @@ class DashboardTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    public function test_authenticated_users_can_visit_the_dashboard(): void
+    public function test_admin_can_visit_the_summary_dashboard(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => Role::Admin]);
         $this->actingAs($user);
 
         $response = $this->get(route('dashboard'));
-        $response->assertOk();
+        $response->assertOk()->assertSeeText('Ringkasan');
     }
 
     public function test_petani_go_straight_to_their_dashboard_from_the_public_site(): void
@@ -36,6 +36,23 @@ class DashboardTest extends TestCase
         $this->get(route('petani.dashboard'))->assertOk()
             ->assertSee('href="'.route('home').'"', false)
             ->assertSeeText('Kembali ke Beranda')
+            ->assertSeeText('Kalkulator Harga Jual')
             ->assertDontSeeText('Ringkasan');
+    }
+
+    public function test_pembeli_go_straight_to_their_dashboard_with_catalog_navigation(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => Role::Pembeli]));
+
+        $this->get(route('home'))->assertOk()->assertSee('href="'.route('dashboard').'"', false);
+        $this->get(route('dashboard'))->assertRedirect(route('pembeli.dashboard'));
+        $this->get(route('pembeli.dashboard'))->assertOk()
+            ->assertSeeText('Dashboard Pembeli')
+            ->assertSeeText('Kembali ke Beranda')
+            ->assertSee('href="'.route('catalog.index').'"', false)
+            ->assertSee('href="'.route('profile.edit').'"', false)
+            ->assertDontSeeText('Ringkasan')
+            ->assertDontSeeText('Kalkulator Harga Jual')
+            ->assertDontSee('href="'.route('calculator.show').'"', false);
     }
 }

@@ -25,7 +25,9 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <a class="market-demo" href="{{ $sourceUrl }}"><span aria-hidden="true"></span> PIHPS Bank Indonesia</a>
-                <a class="ht-button" href="{{ route('calculator.show', ['komoditas' => $commodity]) }}"><flux:icon.calculator class="size-4" /> Hitung harga jual</a>
+                @can('use-selling-price-calculator')
+                    <a class="ht-button" href="{{ route('calculator.show', ['komoditas' => $commodity]) }}"><flux:icon.calculator class="size-4" /> Hitung harga jual</a>
+                @endcan
             </div>
         </header>
 

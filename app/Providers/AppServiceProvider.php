@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\Role;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Http\Middleware\EnsureRole;
 use App\Models\User;
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         Gate::policy(User::class, UserPolicy::class);
+        Gate::define('use-selling-price-calculator', fn (?User $user): bool => $user?->role !== Role::Pembeli);
         Livewire::addPersistentMiddleware([
             EnsureActiveUser::class,
             EnsureRole::class,

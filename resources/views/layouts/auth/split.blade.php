@@ -9,10 +9,10 @@
         <x-skip-link />
 
         <div class="ht-auth-story">
-            <x-landing-brand />
+            <x-landing-brand class="ht-brand--on-dark" />
 
             <div class="ht-auth-story-copy">
-                <span class="ht-brand-icon ht-auth-emblem" aria-hidden="true"><i></i></span>
+                <x-app-logo-icon class="ht-auth-emblem" />
                 <p class="ht-auth-tagline">Langkah baik,<br>dimulai dari sini.</p>
                 <p class="ht-auth-story-description">
                     Kenali harga, temukan peluang, dan bangun hubungan yang lebih dekat dengan hasil panen lokal.

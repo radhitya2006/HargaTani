@@ -2,7 +2,8 @@
     $role = auth()->user()->role;
     $roleDashboard = $role->value.'.dashboard';
     $isPetani = $role === \App\Enums\Role::Petani;
-    $dashboardRoute = $isPetani ? $roleDashboard : 'dashboard';
+    $isAdmin = $role === \App\Enums\Role::Admin;
+    $dashboardRoute = $isAdmin ? 'dashboard' : $roleDashboard;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -19,11 +20,11 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    @unless ($isPetani)
+                    @if ($isAdmin)
                         <flux:sidebar.item icon="home" class="min-h-11" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                             Ringkasan
                         </flux:sidebar.item>
-                    @endunless
+                    @endif
                     <flux:sidebar.item icon="layout-grid" class="min-h-11" :href="route($roleDashboard)" :current="request()->routeIs($roleDashboard)" wire:navigate>
                         Dashboard {{ $role->label() }}
                     </flux:sidebar.item>
@@ -46,11 +47,11 @@
 
             <div class="grid gap-2">
                 <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
-                @if ($isPetani)
+                @unless ($isAdmin)
                     <a class="ht-button ht-primary" href="{{ route('home') }}">
                         Kembali ke Beranda <flux:icon.arrow-up-right class="size-4" />
                     </a>
-                @endif
+                @endunless
             </div>
         </flux:sidebar>
 

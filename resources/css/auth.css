@@ -45,25 +45,7 @@
 
 .ht-auth-story .ht-brand {
     align-self: flex-start;
-    color: #fffdf7;
-    font-size: clamp(1.45rem, 2.15vw, 2rem);
-}
-
-.ht-auth-story .ht-brand:focus-visible {
-    outline-color: #e2edc3;
-}
-
-.ht-auth-story .ht-brand-icon {
-    width: 3.125rem;
-    height: 3.125rem;
-    border-radius: 1rem;
-    background: #ffffff1a;
-}
-
-.ht-auth-story .ht-brand-icon i,
-.ht-auth-story .ht-brand-icon i::before,
-.ht-auth-story .ht-brand-icon i::after {
-    border-color: #dce8b2;
+    width: clamp(11rem, 16vw, 14rem);
 }
 
 .ht-auth-story-copy {
@@ -71,16 +53,10 @@
     padding-top: clamp(3rem, 12vh, 8rem);
 }
 
-.ht-auth-story .ht-auth-emblem {
+.ht-auth-emblem {
     width: 5rem;
     height: 5rem;
-    border: 1px solid #f7f3df40;
     border-radius: 1.25rem;
-    background: transparent;
-}
-
-.ht-auth-emblem i {
-    transform: scale(1.55);
 }
 
 .ht-auth-tagline {
@@ -228,10 +204,8 @@
         padding: .8rem 1.25rem;
     }
 
-    .ht-auth-story .ht-brand-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: .75rem;
+    .ht-auth-story .ht-brand {
+        width: 10.5rem;
     }
 
     .ht-auth-story-copy,

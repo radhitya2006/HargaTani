@@ -136,13 +136,10 @@
 .ht-demo-bar { border-bottom: 1px solid var(--color-line); }
 .ht-actions, .ht-benefits, .ht-calc-copy, .ht-between, .ht-farmer { display: flex; align-items: center; }
 .ht-between { justify-content: space-between; gap: 1rem; }
-.ht-brand { display: inline-flex; align-items: center; gap: .6rem; font-size: 1.55rem; letter-spacing: -.065em; font-weight: 500; color: #19482e; }
-.ht-brand > span:last-child::after { content: ''; background: #cd9e38; display: inline-block; width: .36rem; height: .36rem; border-radius: 50%; vertical-align: top; margin: .42rem 0 0 .35rem; }
-.ht-brand-icon { width: 2.5rem; height: 2.5rem; border-radius: .72rem; background: var(--color-primary); display: grid; place-items: center; }
-.ht-brand-icon i { position: relative; border-bottom: 2px solid white; width: 1.1rem; height: 1.35rem; }
-.ht-brand-icon i::before, .ht-brand-icon i::after { content: ''; position: absolute; width: .62rem; height: .6rem; border: 1.6px solid white; }
-.ht-brand-icon i::before { top: .43rem; left: -.02rem; border-radius: 1px 75% 1px 75%; }
-.ht-brand-icon i::after { right: -.04rem; top: .07rem; border-radius: 75% 1px 75% 1px; box-shadow: -2px 7px 0 -3px white; }
+.ht-brand { display: inline-flex; width: 11rem; max-width: 100%; }
+.ht-brand img { display: block; width: 100%; height: auto; border-radius: .25rem; }
+.ht-brand--on-dark { padding: .45rem .6rem; border-radius: .65rem; background: #fdf9f4; }
+.ht-brand--on-dark:focus-visible { outline-color: #e2edc3; }
 .ht-link:hover, .ht-footer nav a:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: .4em; }
 .ht-actions { gap: 1rem; font-size: .875rem; font-weight: 600; }
 .ht-button { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; border: 1px solid var(--color-line); border-radius: .65rem; padding: .82rem 1.25rem; min-height: 44px; background: white; font-weight: 650; font-size: .91rem; }
@@ -188,6 +185,21 @@
 .ht-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 1.6rem; }
 .ht-market-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ht-card { border: 1px solid var(--color-line); border-radius: 1rem; background: #fffefa; }
+
+@media (hover: hover) {
+    .ht-home-cards > .ht-card:hover {
+        border-color: #b1c4a8;
+        background-color: var(--color-surface);
+        box-shadow: 0 8px 22px #22472f1a;
+    }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .ht-home-cards > .ht-card {
+        transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+}
+
 .ht-price, .ht-product-info { padding: 1.2rem; }
 .ht-landing h3 { font-size: 1rem; line-height: 1.45; font-weight: 650; letter-spacing: -.025em; }
 .ht-price h3 { display: flex; align-items: center; gap: .8rem; }
@@ -222,6 +234,7 @@
 .ht-cta .ht-eyebrow { color: #efcf73; }
 .ht-cta > p:not(.ht-eyebrow) { color: #d7e5ce; font-size: .88rem; margin-block: 1rem 1.5rem; }
 .ht-footer { padding-top: 3rem; background: #f3f2e8; border-top: 1px solid var(--color-line); }
+.ht-footer .ht-brand img { mix-blend-mode: darken; }
 .ht-footer-grid { display: grid; grid-template-columns: 2fr .65fr 1.6fr 1.15fr; gap: 1.5rem; padding-bottom: 2.5rem; }
 .ht-footer p, .ht-footer nav a { font-size: .87rem; line-height: 1.7; }
 .ht-footer p { margin-top: .9rem; color: var(--muted); }
@@ -237,8 +250,7 @@
     .ht-demo-note { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
-    .ht-brand { font-size: 1.25rem; }
-    .ht-brand-icon { width: 2rem; height: 2rem; }
+    .ht-brand { width: 9.75rem; }
     .ht-hero { grid-template-columns: 1fr; gap: 2rem; padding-block: 2.25rem; }
     .ht-hero-art { width: 100%; max-width: 34rem; justify-self: center; }
     .ht-hero-placeholder { aspect-ratio: 1.55; }

@@ -1,5 +1,13 @@
+@use('Illuminate\Support\Facades\Gate')
+
 @php
     $accountUrl = auth()->check() ? route('dashboard') : route('register');
+    $canCalculatePrice = Gate::allows('use-selling-price-calculator');
+    $marketStep = ['chart-bar', 'Kenali harga pasar', 'Lihat referensi harga dan pergerakan komoditas sebelum mengambil keputusan.'];
+    $catalogStep = ['shopping-bag', 'Temukan peluang panen', 'Kenali hasil panen dan petani lokal di sekitar Anda.'];
+    $steps = $canCalculatePrice
+        ? [$marketStep, ['calculator', 'Hitung harga yang sesuai', 'Pahami biaya dan tentukan tambahan keuntungan untuk hasil kerja Anda.'], $catalogStep]
+        : [$marketStep, $catalogStep, ['magnifying-glass', 'Periksa detail produk', 'Lihat harga per kg, stok, dan lokasi pengambilan.']];
 @endphp
 
 <x-layouts::public title="Beranda">
@@ -7,7 +15,9 @@
         <div>
             <p class="ht-tag"><span class="ht-dot"></span> Dari tanah Bali, untuk kita semua</p>
             <h1 id="hero-title">Kenali harganya.<br>Hargai <em>hasil panennya.</em></h1>
-            <p class="ht-lead">Pantau harga pasar, tentukan harga jual yang lebih terukur, dan temukan hasil panen langsung dari petani lokal.</p>
+            <p class="ht-lead">{{ $canCalculatePrice
+                ? 'Pantau harga pasar, tentukan harga jual yang lebih terukur, dan temukan hasil panen langsung dari petani lokal.'
+                : 'Bandingkan harga pasar dan temukan hasil panen langsung dari petani lokal.' }}</p>
             <div class="ht-actions">
                 <a class="ht-button ht-primary" href="{{ route('prices.index') }}">Lihat harga pasar <span aria-hidden="true">→</span></a>
                 <a class="ht-button" href="{{ route('catalog.index') }}"><flux:icon.shopping-bag class="size-4" /> Jelajahi hasil panen</a>
@@ -31,7 +41,7 @@
         <p class="ht-eyebrow">Informasi untuk langkah lebih pasti</p>
         <h2 id="market-title">Harga pasar, sekilas.</h2>
         <p class="ht-intro">Referensi harga komoditas untuk keputusan yang lebih terukur.</p>
-        <div class="ht-grid ht-market-grid">
+        <div class="ht-grid ht-market-grid ht-home-cards">
             @foreach ($marketCards as $slug => $item)
                 @php
                     $change = $item['change'];
@@ -63,12 +73,14 @@
         <div class="ht-meta"><small>Referensi harga eceran per kilogram</small></div>
     </section>
 
-    <section class="ht-calc" id="kalkulator" aria-label="Kalkulator harga">
-        <div class="ht-wrap ht-between">
-            <div class="ht-calc-copy"><span class="ht-icon"><flux:icon.calculator /></span><div><h3>Panen sudah siap. Harga jualnya sudah tepat?</h3><p>Hitung biaya dan tentukan tambahan keuntungan per kilogram.</p></div></div>
-            <a class="ht-button ht-primary" href="{{ route('calculator.show') }}">Buka kalkulator <span aria-hidden="true">→</span></a>
-        </div>
-    </section>
+    @if ($canCalculatePrice)
+        <section class="ht-calc" id="kalkulator" aria-label="Kalkulator harga">
+            <div class="ht-wrap ht-between">
+                <div class="ht-calc-copy"><span class="ht-icon"><flux:icon.calculator /></span><div><h3>Panen sudah siap. Harga jualnya sudah tepat?</h3><p>Hitung biaya dan tentukan tambahan keuntungan per kilogram.</p></div></div>
+                <a class="ht-button ht-primary" href="{{ route('calculator.show') }}">Buka kalkulator <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+    @endif
 
     <section class="ht-wrap ht-section" id="hasil-panen" tabindex="-1" aria-labelledby="product-title">
         <div class="flex flex-wrap items-end justify-between gap-4">
@@ -78,7 +90,7 @@
         @if ($featuredProducts->isEmpty())
             <p class="ht-intro">Belum ada hasil panen yang diterbitkan.</p>
         @else
-            <div class="ht-grid ht-market-grid">
+            <div class="ht-grid ht-market-grid ht-home-cards">
                 @foreach ($featuredProducts as $product)
                     <x-catalog.product-card :$product />
                 @endforeach
@@ -90,11 +102,7 @@
         <p class="ht-eyebrow">Sederhana, dari awal hingga panen</p>
         <h2 id="steps-title">Tiga langkah, lebih banyak kepastian.</h2>
         <ol>
-            @foreach ([
-                ['chart-bar', 'Kenali harga pasar', 'Lihat referensi harga dan pergerakan komoditas sebelum mengambil keputusan.'],
-                ['calculator', 'Hitung harga yang sesuai', 'Pahami biaya dan tentukan tambahan keuntungan untuk hasil kerja Anda.'],
-                ['shopping-bag', 'Temukan peluang panen', 'Kenali hasil panen dan petani lokal di sekitar Anda.'],
-            ] as [$icon, $label, $description])
+            @foreach ($steps as [$icon, $label, $description])
                 <li class="ht-card"><div class="ht-between"><span class="ht-icon"><flux:icon :name="$icon" /></span><span aria-hidden="true" class="ht-index">0{{ $loop->iteration }}</span></div><h3>{{ $label }}</h3><p>{{ $description }}</p></li>
             @endforeach
         </ol>

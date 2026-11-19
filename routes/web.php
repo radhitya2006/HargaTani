@@ -11,16 +11,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/harga', MarketPriceController::class)->name('prices.index');
-Route::get('/kalkulator', [SellingPriceCalculatorController::class, 'show'])->name('calculator.show');
-Route::post('/kalkulator', [SellingPriceCalculatorController::class, 'calculate'])->name('calculator.calculate');
+Route::middleware('can:use-selling-price-calculator')->group(function () {
+    Route::get('/kalkulator', [SellingPriceCalculatorController::class, 'show'])->name('calculator.show');
+    Route::post('/kalkulator', [SellingPriceCalculatorController::class, 'calculate'])->name('calculator.calculate');
+});
 Route::get('/hasil-panen', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/hasil-panen/{product}', [CatalogController::class, 'show'])->whereNumber('product')->name('catalog.show');
 Route::get('/hasil-panen/{product}/foto', [CatalogController::class, 'photo'])->whereNumber('product')->name('catalog.photo');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn (Request $request) => $request->user()?->role === Role::Petani
-        ? to_route('petani.dashboard')
-        : view('dashboard'))->name('dashboard');
+    Route::get('dashboard', function (Request $request) {
+        $role = $request->user()?->role;
+
+        return match ($role) {
+            Role::Petani, Role::Pembeli => to_route($role->value.'.dashboard'),
+            default => view('dashboard'),
+        };
+    })->name('dashboard');
     foreach (Role::cases() as $role) {
         Route::view($role->value.'/dashboard', 'role-dashboard', ['role' => $role])
             ->middleware('role:'.$role->value)

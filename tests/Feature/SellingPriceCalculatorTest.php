@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\Role;
+use App\Models\User;
 use App\Services\PihpsBaliPrices;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,6 +21,37 @@ class SellingPriceCalculatorTest extends TestCase
 
         $this->get('/kalkulator?komoditas=cabai-rawit-merah')->assertOk()
             ->assertSee('value="cabai-rawit-merah" selected', false);
+    }
+
+    public function test_buyers_do_not_see_selling_price_tools_and_cannot_use_the_calculator(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => Role::Pembeli]));
+
+        $this->get(route('home'))->assertOk()
+            ->assertSeeText('Periksa detail produk')
+            ->assertDontSeeText('Hitung harga yang sesuai')
+            ->assertDontSeeText('Buka kalkulator')
+            ->assertDontSee(route('calculator.show'));
+        $this->get(route('prices.index', ['komoditas' => 'cabai-rawit-merah']))->assertOk()
+            ->assertDontSeeText('Hitung harga jual')
+            ->assertDontSee(route('calculator.show'));
+        $this->get(route('catalog.index'))->assertOk()->assertDontSee(route('calculator.show'));
+        $this->get(route('calculator.show'))->assertForbidden();
+        $this->post(route('calculator.calculate'))->assertForbidden();
+    }
+
+    public function test_farmers_can_open_and_use_the_calculator(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => Role::Petani]));
+
+        $this->get(route('home'))->assertOk()->assertSeeText('Buka kalkulator');
+        $this->get(route('calculator.show'))->assertOk();
+        $this->post(route('calculator.calculate'), [
+            'komoditas' => 'bawang-merah',
+            'biaya_panen' => '10000',
+            'jumlah_kg' => '1',
+            'tambahan_keuntungan' => '0',
+        ])->assertOk()->assertSee('Rp10.000');
     }
 
     public function test_suggested_price_compares_with_the_latest_bali_retail_observation(): void
