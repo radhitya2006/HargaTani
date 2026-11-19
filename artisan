@@ -6,6 +6,12 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
+// Give Symfony dimensions for the console-free Windows scheduler to skip its terminal probes.
+if (PHP_OS_FAMILY === 'Windows' && strcasecmp(basename(PHP_BINARY), 'php-win.exe') === 0) {
+    putenv('COLUMNS=80');
+    putenv('LINES=50');
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 
