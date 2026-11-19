@@ -59,15 +59,17 @@
     </div></div>
 
     <section class="ht-wrap ht-section" id="harga-pasar" tabindex="-1" aria-labelledby="market-title">
-        <p class="ht-eyebrow">Informasi untuk langkah lebih pasti</p>
-        <h2 id="market-title">Harga pasar, sekilas.</h2>
-        <p class="ht-intro">Referensi harga komoditas untuk keputusan yang lebih terukur.</p>
+        <header data-scroll-reveal>
+            <p class="ht-eyebrow">Informasi untuk langkah lebih pasti</p>
+            <h2 id="market-title">Harga pasar, sekilas.</h2>
+            <p class="ht-intro">Referensi harga komoditas untuk keputusan yang lebih terukur.</p>
+        </header>
         <div class="ht-grid ht-market-grid ht-home-cards">
             @foreach ($marketCards as $slug => $item)
                 @php
                     $change = $item['change'];
                 @endphp
-                <article class="ht-card ht-price ht-{{ $item['tone'] }}">
+                <article class="ht-card ht-price ht-{{ $item['tone'] }}" data-scroll-reveal>
                     <h3>
                         <span class="ht-swatch" aria-hidden="true"></span>
                         <a class="ht-link" href="{{ route('prices.index', ['komoditas' => $slug]) }}">{{ $item['name'] }}</a>
@@ -91,19 +93,19 @@
                 </article>
             @endforeach
         </div>
-        <div class="ht-meta"><small>Referensi harga eceran per kilogram</small></div>
+        <div class="ht-meta" data-scroll-reveal><small>Referensi harga eceran per kilogram</small></div>
     </section>
 
     @if ($canCalculatePrice)
         <section class="ht-calc" id="kalkulator" aria-label="Kalkulator harga">
-            <div class="ht-wrap ht-between">
+            <div class="ht-wrap ht-between" data-scroll-reveal>
                 <div class="ht-calc-copy"><span class="ht-icon"><flux:icon.calculator /></span><div><h3>Panen sudah siap. Harga jualnya sudah tepat?</h3><p>Hitung biaya dan tentukan tambahan keuntungan per kilogram.</p></div></div>
                 <a class="ht-button ht-primary" href="{{ route('calculator.show') }}">Buka kalkulator <span aria-hidden="true">→</span></a>
             </div>
         </section>
     @endif
 
-    <section class="ht-wrap ht-section" id="hasil-panen" tabindex="-1" aria-labelledby="product-title">
+    <section class="ht-wrap ht-section" id="hasil-panen" tabindex="-1" aria-labelledby="product-title" data-scroll-reveal>
         <div class="flex flex-wrap items-end justify-between gap-4">
             <h2 id="product-title">Hasil Panen Terbaru</h2>
             <a class="ht-button" href="{{ route('catalog.index') }}">Lihat semua hasil panen <flux:icon.arrow-right class="size-4" /></a>
@@ -119,7 +121,7 @@
         @endif
     </section>
 
-    <section id="cara-kerja" class="ht-wrap ht-steps" aria-labelledby="steps-title">
+    <section id="cara-kerja" class="ht-wrap ht-steps" aria-labelledby="steps-title" data-scroll-reveal>
         <p class="ht-eyebrow">Sederhana, dari awal hingga panen</p>
         <h2 id="steps-title">Tiga langkah, lebih banyak kepastian.</h2>
         <ol class="ht-home-cards">
@@ -129,7 +131,7 @@
         </ol>
     </section>
 
-    <div class="ht-wrap ht-cta-wrap"><section class="ht-cta">
+    <div class="ht-wrap ht-cta-wrap"><section class="ht-cta" data-scroll-reveal>
         <p class="ht-eyebrow">Tumbuh bersama HargaTani</p>
         <h2>Hasil kerja baik, layak dihargai dengan baik.</h2>
         <p>Mulai dari satu harga yang lebih terbuka, satu panen yang lebih berarti.</p>

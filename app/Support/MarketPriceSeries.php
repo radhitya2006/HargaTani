@@ -11,15 +11,15 @@ final class MarketPriceSeries
      * @return array{observations: list<array{date: CarbonImmutable, price: int}>, latest: array{date: CarbonImmutable, price: int}|null,
      *     previous: array{date: CarbonImmutable, price: int}|null, change: int|null, isStale: bool}
      */
-    public static function forCommodity(string $commodity, int $days): array
+    public static function forCommodity(string $commodity, ?int $days = null): array
     {
-        $rows = MarketPrice::query()->pihpsBali($commodity)->orderByDesc('observed_on')->limit($days)->get();
+        $rows = MarketPrice::query()->pihpsBali($commodity)->orderByDesc('observed_on')->limit($days ?? 2)->get();
         $end = $rows->first()?->observed_on;
         $observations = [];
         if ($end !== null) {
-            $start = $end->subDays($days - 1);
+            $start = $days === null ? null : $end->subDays($days - 1);
             foreach ($rows->reverse() as $row) {
-                if ($row->observed_on >= $start) {
+                if ($start === null || $row->observed_on >= $start) {
                     $observations[] = ['date' => $row->observed_on->settings(['locale' => 'id']), 'price' => $row->price_per_kg];
                 }
             }

@@ -12,6 +12,15 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme inline {
+    --animate-float: float var(--hero-float-duration) ease-in-out var(--hero-float-delay) infinite;
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+}
+
 @theme {
     --font-sans: 'Plus Jakarta Sans Variable', system-ui, sans-serif;
 

@@ -93,7 +93,7 @@ class CatalogTest extends TestCase
             ->assertSee(route('catalog.index', $filters + ['page' => 1]));
 
         $this->actingAs(User::factory()->create(['role' => Role::Pembeli]))
-            ->get(route('pembeli.dashboard'))->assertOk()->assertSee('Buka etalase')->assertSee(route('catalog.index'));
+            ->get(route('pembeli.dashboard'))->assertOk()->assertSee('Jelajahi Hasil Panen')->assertSee(route('catalog.index'));
     }
 
     /** @param array<string, string> $fields */

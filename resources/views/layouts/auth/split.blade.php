@@ -9,6 +9,7 @@
         <x-skip-link />
 
         <div class="ht-auth-story">
+            <img class="ht-auth-photo" src="{{ asset('images/auth-rice-terraces.webp') }}" width="1280" height="1600" alt="">
             <x-landing-brand class="ht-brand--on-dark" />
 
             <div class="ht-auth-story-copy">

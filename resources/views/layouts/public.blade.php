@@ -13,6 +13,7 @@
             <x-landing-navigation />
         </x-sidebar-menu>
         <x-theme-toggle compact class="ms-auto" />
+        <x-account-menu show-dashboard />
     </header>
 
     <div class="ht-landing-content">
