@@ -47,6 +47,12 @@
                         <dd class="mt-1 text-ink-muted">{{ $product->district }}, Bali</dd>
                     </div>
                 </dl>
+
+                @unless ($product->isSoldOut())
+                    @if (auth()->guest() || auth()->user()?->role === \App\Enums\Role::Pembeli)
+                        <a class="ht-button ht-primary" href="{{ route('orders.create', $product) }}">Pesan</a>
+                    @endif
+                @endunless
             </div>
         </article>
     </div>

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Enums\ProductStatus;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Support\BaliDistricts;
 use App\Support\PriceCommodities;
 use App\Support\ProductPhoto;
+use Brick\Math\BigDecimal;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,11 +67,27 @@ final class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): RedirectResponse
     {
-        $photo = $request->hasFile('photo') ? $this->savePhoto($request->file('photo'), $product->farmer_id) : null;
+        $photo = $request->hasFile('photo') ? $this->savePhoto($request->file('photo'), $request->user()->id) : null;
         try {
             $oldPhoto = DB::transaction(function () use ($request, $product, $photo): ?string {
                 $current = Product::query()->whereKey($product->getKey())->lockForUpdate()->firstOrFail();
-                $current->fill($request->safe()->except('photo'));
+                $current->fill($request->safe()->except(['photo', 'stock_kg', 'stock_before']));
+                $stockBefore = BigDecimal::of((string) $request->validated('stock_before'));
+                $newStock = BigDecimal::of((string) $request->validated('stock_kg'));
+                if (! $newStock->isEqualTo($stockBefore) && ! $newStock->isEqualTo($current->stock_kg)) {
+                    if (! $stockBefore->isEqualTo($current->stock_kg)) {
+                        throw ValidationException::withMessages([
+                            'stock_conflict' => 'Stok berubah sejak formulir dibuka. Periksa stok terbaru sebelum menyimpan.',
+                        ]);
+                    }
+                    $allocated = $current->orders()->where('status', OrderStatus::Accepted)->sum('quantity_kg');
+                    if ($newStock->plus((string) $allocated)->isGreaterThan(Product::MAX_STOCK_KG)) {
+                        throw ValidationException::withMessages([
+                            'stock_kg' => 'Stok tersedia ditambah jumlah yang dialokasikan ke pesanan diterima melebihi batas stok.',
+                        ]);
+                    }
+                    $current->stock_kg = (string) $newStock;
+                }
                 $oldPhoto = null;
                 if ($photo !== null) {
                     $oldPhoto = $current->photo_path;

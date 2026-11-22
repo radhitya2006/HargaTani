@@ -49,6 +49,7 @@ class FarmerProductsTest extends TestCase
 
         $this->post(route('petani.products.update', $product), $this->details() + [
             '_method' => 'PATCH',
+            'stock_before' => '0.00',
             'photo' => UploadedFile::fake()->image('panen-baru.png'),
         ])->assertSessionHasNoErrors();
         $this->assertFalse($product->refresh()->isSoldOut());

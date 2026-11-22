@@ -10,9 +10,10 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int $farmer_id
+ * @property int|null $farmer_id
  * @property string $photo_path
  * @property int $price_per_kg
  * @property string $stock_kg
@@ -22,6 +23,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['name', 'commodity', 'description', 'price_per_kg', 'stock_kg', 'harvested_on', 'district', 'pickup_location'])]
 final class Product extends Model
 {
+    public const WEIGHT_PATTERN = '/\A[0-9]{1,8}(?:\.[0-9]{1,2})?\z/';
+
+    public const MAX_STOCK_KG = '99999999.99';
+
     protected $attributes = ['status' => 'draf'];
 
     /** @return array<string, string> */
@@ -39,6 +44,12 @@ final class Product extends Model
     public function farmer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'farmer_id');
+    }
+
+    /** @return HasMany<Order, $this> */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 
     /** @param Builder<self> $query */

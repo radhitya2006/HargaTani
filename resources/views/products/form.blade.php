@@ -9,6 +9,8 @@
     };
     $commodity = $fieldValue('commodity', $product?->commodity);
     $district = $fieldValue('district', $product?->district ?? $defaultDistrict);
+    $resetStock = $product && $fieldValue('stock_before', $product->stock_kg) !== $product->stock_kg;
+    $currentStock = $product ? str_replace('.', ',', $product->stock_kg) : '';
 @endphp
 
 <x-layouts::app :title="$title">
@@ -30,6 +32,7 @@
                     @csrf
                     @if ($product)
                         @method('PATCH')
+                        <input type="hidden" name="stock_before" value="{{ $product->stock_kg }}">
                     @endif
 
                     <flux:input name="name" label="Nama produk" :value="$fieldValue('name', $product?->name)" required maxlength="120" />
@@ -46,15 +49,21 @@
                             :max="today()->toDateString()" :value="$fieldValue('harvested_on', $product?->harvested_on->toDateString())" />
                     </div>
 
-                    <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="grid items-start gap-5 sm:grid-cols-2">
                         <flux:input name="price_per_kg" label="Harga per kg (Rp)" type="number" inputmode="numeric" min="1" max="9999999999"
                             step="1" :value="$fieldValue('price_per_kg', $product?->price_per_kg)" required />
-                        <flux:input name="stock_kg" label="Stok tersedia (kg)" inputmode="decimal"
-                            :value="$fieldValue('stock_kg', $product ? str_replace('.', ',', $product->stock_kg) : '')"
-                            description="Gunakan hingga dua angka desimal." required />
+                        <div class="space-y-2">
+                            <flux:input name="stock_kg" label="Stok tersedia (kg)" inputmode="decimal"
+                                :value="$resetStock ? $currentStock : $fieldValue('stock_kg', $currentStock)"
+                                description:trailing="Isi stok di luar alokasi pesanan yang telah diterima. Gunakan hingga dua angka desimal." required />
+                            <flux:error name="stock_before" />
+                            @if ($resetStock)
+                                <p role="alert" class="text-sm text-warning">Stok berubah sejak formulir dibuka. Periksa stok terbaru sebelum menyimpan.</p>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="grid items-start gap-5 sm:grid-cols-2">
                         <flux:select name="district" label="Kabupaten/kota" required>
                             <option value="" disabled @selected(! $district)>Pilih kabupaten/kota</option>
                             @foreach ($districts as $option)
@@ -64,7 +73,7 @@
 
                         <flux:input name="pickup_location" label="Lokasi pengambilan" required maxlength="250"
                             :value="$fieldValue('pickup_location', $product?->pickup_location)"
-                            description="Lokasi pengambilan ditampilkan di etalase saat produk diterbitkan." />
+                            description:trailing="Lokasi pengambilan ditampilkan di etalase saat produk diterbitkan." />
                     </div>
 
                     <div class="grid gap-2">

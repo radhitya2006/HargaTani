@@ -1,11 +1,17 @@
 <?php
 
 use App\Concerns\PasswordValidationRules;
+use App\Enums\OrderStatus;
+use App\Enums\ProductStatus;
 use App\Enums\Role;
 use App\Livewire\Actions\Logout;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 new class extends Component {
@@ -22,8 +28,26 @@ new class extends Component {
             'password' => $this->currentPasswordRules(),
         ]);
 
-        $user = tap(Auth::user(), $logout(...));
-        if ($user->delete() && $user->role === Role::Petani) {
+        $user = DB::transaction(function (): User {
+            $user = User::query()->whereKey(Auth::id())->lockForUpdate()->firstOrFail();
+            $hasOpenOrders = Order::query()
+                ->where(fn ($orders) => $orders->where('buyer_id', $user->id)->orWhere('farmer_id', $user->id))
+                ->whereIn('status', [OrderStatus::Pending, OrderStatus::Accepted])->exists();
+            if ($hasOpenOrders) {
+                throw ValidationException::withMessages(['password' => 'Selesaikan pesanan yang masih aktif sebelum menghapus akun.']);
+            }
+            if ($user->role === Role::Petani) {
+                $products = Product::query()->where('farmer_id', $user->id);
+                (clone $products)->whereDoesntHave('orders')->delete();
+                $products->update(['status' => ProductStatus::Archived]);
+            }
+            $user->delete();
+
+            return $user;
+        }, 3);
+
+        $logout();
+        if ($user->role === Role::Petani) {
             Storage::disk('local')->deleteDirectory(Product::photoDirectory($user->id));
         }
 
@@ -37,7 +61,11 @@ new class extends Component {
             <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>
 
             <flux:subheading>
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                @if (auth()->user()->role === Role::Admin)
+                    {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                @else
+                    Masukkan kata sandi untuk menghapus akun. Pihak terkait tetap dapat melihat riwayat pesanan. Nama akun dan kontak transaksi Anda dihapus.
+                @endif
             </flux:subheading>
         </div>
 

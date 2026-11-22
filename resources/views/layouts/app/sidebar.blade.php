@@ -37,6 +37,11 @@
                                 Hasil Panen
                             </flux:sidebar.item>
                         @endif
+                        @unless ($isAdmin)
+                            <flux:sidebar.item icon="clipboard-document-list" class="min-h-11" :href="route('orders.index')" :current="request()->routeIs('orders.*')" wire:navigate>
+                                {{ $isPetani ? 'Pesanan Masuk' : 'Pesanan Saya' }}
+                            </flux:sidebar.item>
+                        @endunless
                         <flux:sidebar.item icon="cog" class="min-h-11" :href="route('profile.edit')" :current="request()->routeIs('profile.*', 'security.*')" wire:navigate>
                             Pengaturan akun
                         </flux:sidebar.item>

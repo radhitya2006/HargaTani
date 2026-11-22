@@ -9,6 +9,9 @@
                 @else
                     <flux:button variant="primary" icon="shopping-bag" :href="route('catalog.index')">Jelajahi Hasil Panen</flux:button>
                 @endif
+                <flux:button :href="route('orders.index')" wire:navigate>
+                    {{ $role === \App\Enums\Role::Petani ? 'Pesanan Masuk' : 'Pesanan Saya' }}
+                </flux:button>
             </x-slot:actions>
         </x-ui.page-heading>
 

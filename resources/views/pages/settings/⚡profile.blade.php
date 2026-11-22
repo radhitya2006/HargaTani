@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -30,6 +29,8 @@ new #[Title('Profile settings')] class extends Component {
         $this->email = $user->email;
         if ($user->role === Role::Petani) {
             $this->district = $user->district;
+        }
+        if ($user->role !== Role::Admin) {
             $this->transaction_contact = $user->transaction_contact;
         }
     }
@@ -49,6 +50,8 @@ new #[Title('Profile settings')] class extends Component {
         $rules = $this->profileRules($user->id);
         if ($user->role === Role::Petani) {
             $rules['district'] = ['nullable', Rule::in(BaliDistricts::ALL)];
+        }
+        if ($user->role !== Role::Admin) {
             $rules['transaction_contact'] = ['nullable', 'string', 'max:120'];
         }
 
@@ -57,6 +60,8 @@ new #[Title('Profile settings')] class extends Component {
         $user->fill($validated);
         if ($user->role === Role::Petani) {
             $user->district = filled($this->district) ? $this->district : null;
+        }
+        if ($user->role !== Role::Admin) {
             $user->transaction_contact = filled($this->transaction_contact) ? trim($this->transaction_contact) : null;
         }
 
@@ -92,8 +97,10 @@ new #[Title('Profile settings')] class extends Component {
                         <option value="{{ $districtOption }}">{{ $districtOption }}</option>
                     @endforeach
                 </flux:select>
+            @endif
+            @if (auth()->user()->role !== \App\Enums\Role::Admin)
                 <flux:input wire:model="transaction_contact" label="Kontak transaksi" type="text" maxlength="120"
-                    description="Nomor telepon atau alamat email untuk transaksi. Kontak ini bersifat privat." />
+                    description="Nomor telepon atau alamat email yang dibagikan kepada pihak terkait saat pesanan berstatus Diterima." />
             @endif
 
             <div class="flex items-center gap-4">

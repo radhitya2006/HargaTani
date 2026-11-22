@@ -1,3 +1,5 @@
+import './order-form.js';
+
 const chart = document.querySelector('[data-market-chart]');
 
 if (chart) {

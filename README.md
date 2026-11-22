@@ -8,6 +8,7 @@ Fondasi proyek UAS HargaTani berdasarkan langkah 2 pada [PRD](PRD.md). Menggunak
 - Registrasi hanya menerima `petani` atau `pembeli`; `admin` dibuat melalui seeder.
 - Enum peran, migration peran/status aktif, middleware akses peran dan akun aktif, serta UserPolicy untuk akses profil.
 - Dashboard awal masing-masing peran. Beranda dan halaman Harga Pasar membaca tiga seri PIHPS Bali dari MySQL.
+- Pembeli dapat memesan satu produk dari etalase dan melacaknya di **Pesanan Saya**. Petani menangani pesanan di **Pesanan Masuk**. Stok dialokasikan saat pesanan diterima.
 - Session, cache, dan queue menggunakan database. Email lokal ditulis ke log; verifikasi email, 2FA, dan passkeys belum diaktifkan.
 - Git sudah diinisialisasi sebelum pengerjaan ini. Tidak ada commit atau push otomatis.
 
@@ -105,4 +106,4 @@ Build aset diperlukan sebelum pengujian render halaman. Suite mencakup autentika
 - `routes/web.php`: beranda dan dashboard per peran.
 - `tests/Feature/FoundationTest.php`: pengujian fondasi akses.
 
-Policy produk dan pesanan akan dibuat bersama modelnya pada tahap berikutnya. Panel moderasi/nonaktifkan akun belum tersedia; fondasi sudah menolak login dan sesi akun dengan `is_active=false`. Konfigurasi Gemini baru berupa placeholder tanpa panggilan API.
+Panel moderasi/nonaktifkan akun belum tersedia; fondasi sudah menolak login dan sesi akun dengan `is_active=false`. Konfigurasi Gemini baru berupa placeholder tanpa panggilan API.
