@@ -1,4 +1,5 @@
 import './order-form.js';
+import './market-chat.js';
 
 const chart = document.querySelector('[data-market-chart]');
 

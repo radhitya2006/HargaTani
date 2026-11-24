@@ -18,7 +18,7 @@ Petani membutuhkan akses informasi harga yang mudah dipahami, cara menghitung ha
 
 ### 1.2 Solusi dan proposisi nilai
 
-HargaTani menggabungkan dashboard harga pangan Bali, estimasi harga berbasis perhitungan backend, kalkulator harga jual, etalase hasil panen, dan pemesanan sederhana. AI membantu menulis deskripsi produk, menjelaskan tren, dan menjelaskan pilihan harga jual.
+HargaTani menggabungkan dashboard harga pangan Bali, estimasi harga berbasis perhitungan backend, kalkulator harga jual, etalase hasil panen, dan pemesanan sederhana. AI membantu pengguna membaca tren harga pasar.
 
 Alur utama: **pantau harga → hitung harga jual → terbitkan produk → terima pesanan**.
 
@@ -58,7 +58,7 @@ Persona berikut merupakan hipotesis desain, bukan hasil wawancara pengguna.
 
 | Persona | Kebutuhan dan tujuan | Hambatan | Dukungan produk |
 | --- | --- | --- | --- |
-| Wayan, petani hortikultura di Bali | Memahami harga cabai dan menjual hasil panen dengan mempertimbangkan biaya | Lebih sering memakai HP, waktu mengisi formulir terbatas, belum terbiasa menulis promosi | Angka utama jelas, kalkulator sederhana, deskripsi berbantuan AI, pengelolaan pesanan |
+| Wayan, petani hortikultura di Bali | Memahami harga cabai dan menjual hasil panen dengan mempertimbangkan biaya | Lebih sering memakai HP, waktu mengisi formulir terbatas, belum terbiasa menulis promosi | Angka utama jelas, ringkasan tren AI, kalkulator sederhana, pengelolaan pesanan |
 | Ayu, pembeli rumah tangga atau pemilik warung di Bali | Menemukan produk, harga, stok, dan lokasi petani yang sesuai | Sulit memastikan ketersediaan dan kesepakatan pengambilan | Filter produk, informasi petani, pesanan dengan status yang jelas |
 | Admin pengelola proyek | Menjaga kualitas data dan kelayakan etalase | Data sumber dapat kosong, format impor keliru, produk dapat bermasalah | Pratinjau impor, laporan validasi, moderasi akun dan produk |
 
@@ -75,8 +75,8 @@ Target berikut merupakan kriteria penerimaan MVP, bukan hasil yang sudah tercapa
 | Waktu penerbitan produk | Median maksimal lima menit setelah login | Ukur dari membuka formulir sampai produk tersimpan; foto uji disediakan |
 | Integritas impor | 100% baris valid tersimpan sesuai nilai sumber; 100% duplikat terdeteksi | Cocokkan fixture impor dengan database dan hasil pratinjau |
 | Integritas stok | Nol stok negatif dan nol penerimaan melebihi stok | Skenario penerimaan bersamaan terhadap stok terakhir |
-| Ketahanan terhadap kegagalan AI | 100% skenario gagal uji tetap menyediakan pengisian manual dan kalkulator | Simulasikan timeout, respons tidak valid, serta penolakan/kuota penyedia |
-| Transparansi AI | 100% keluaran AI berlabel dan tidak disimpan sebagai konten final tanpa tindakan pengguna | Pemeriksaan ketiga tugas AI dan hasil yang disunting |
+| Ketahanan terhadap kegagalan AI | 100% skenario gagal uji tetap menyediakan statistik harga | Simulasikan timeout, respons tidak valid, serta penolakan/kuota penyedia |
+| Transparansi AI | 100% ringkasan AI berlabel serta mencantumkan periode dan sumber | Periksa tampilan ringkasan harga pasar |
 | Performa halaman inti | p95 waktu navigasi sampai konten utama siap maksimal tiga detik | Minimal 30 pengukuran per halaman setelah build produksi pada lingkungan uji yang dicatat, tanpa waktu API AI |
 | Evaluasi estimasi | MAE dan pembanding harga terakhir dilaporkan pada 20 pengamatan uji terakhir | Evaluasi berurutan per komoditas menggunakan sedikitnya 60 pengamatan historis valid |
 
@@ -91,10 +91,9 @@ Tidak ada target akurasi estimasi yang diklaim sebelum evaluasi. Jika data 60 pe
 3. Melihat estimasi pengamatan berikutnya bila data memenuhi syarat; meminta ringkasan tren AI bila diperlukan.
 4. Mengisi total biaya satu panen, jumlah kg layak jual, dan persentase tambahan keuntungan.
 5. Meninjau biaya per kg serta harga usulan yang dihitung backend dan membandingkannya dengan referensi eceran pasar.
-6. Meminta penjelasan AI secara opsional, lalu menentukan sendiri harga akhir.
+6. Menentukan harga jual akhir.
 7. Membuat produk: memilih komoditas, memasukkan nama, foto, stok, harga, tanggal panen, lokasi, dan deskripsi.
-8. Mengisi deskripsi sendiri atau meminta draf AI dari fakta dan kata kunci yang diberikan.
-9. Meninjau/mengedit draf dan menekan tombol terbitkan. Penerbitan tidak terjadi otomatis setelah AI merespons.
+8. Meninjau draf produk dan menekan tombol terbitkan.
 
 ### 4.2 Pembeli: mencari dan memesan
 
@@ -133,7 +132,7 @@ Seluruh kebutuhan di bawah berprioritas wajib untuk MVP, kecuali yang dinyatakan
 - **FR-01:** Registrasi, login, logout, dan profil melalui autentikasi bawaan Laravel. Pendaftaran hanya menawarkan peran petani atau pembeli.
 - **FR-02:** Backend memeriksa peran dan kepemilikan pada setiap operasi. Petani hanya mengelola produk serta pesanan masuk miliknya; pembeli hanya mengakses pesanan miliknya.
 - **FR-03:** Admin dapat menonaktifkan akun dan mencabut akses sesi akun tersebut. Pesanan aktifnya diselesaikan melalui peninjauan admin bersama pihak terkait; perubahan status harus tercatat.
-- **FR-04:** Kontak privat, biaya produksi, dan target keuntungan tidak ditampilkan dalam katalog publik atau dikirim kepada AI untuk tugas yang tidak membutuhkannya.
+- **FR-04:** Kontak privat, biaya produksi, dan target keuntungan tidak ditampilkan dalam katalog publik atau dikirim ke penyedia AI.
 
 ### 5.2 Data dan dashboard harga
 
@@ -164,20 +163,21 @@ Seluruh kebutuhan di bawah berprioritas wajib untuk MVP, kecuali yang dinyatakan
 
 ### 5.5 Asisten AI
 
-- **FR-23:** Gunakan satu endpoint internal, `POST /api/ai/assist`, dengan tugas `description`, `trend_summary`, atau `price_advice`. Endpoint memakai autentikasi sesi, proteksi CSRF, validasi, dan batas sepuluh permintaan per menit per akun. Satu layanan backend memilih prompt sesuai tugas.
-- **FR-24:** Untuk deskripsi, kirim fakta produk dan kata kunci. AI tidak boleh menambahkan klaim organik, bebas pestisida, sertifikasi, kualitas, atau asal yang tidak diberikan.
-- **FR-25:** Untuk tren, backend mengambil data dalam 14 hari kalender terakhir dan menghitung perubahan, rata-rata, minimum, serta maksimum. AI menerima tanggal dan jumlah pengamatan sebenarnya. Minimal dua pengamatan diperlukan; jika kurang, tampilkan statistik tersedia dan informasi data belum cukup.
-- **FR-26:** Untuk saran harga, kirim biaya per kg, tambahan keuntungan, harga usulan hasil kalkulator, dan referensi pasar beserta tanggal bila tersedia. AI hanya menjelaskan angka dan pilihan tersebut; jangan menerima angka harga baru hasil karangan model sebagai harga usulan.
-- **FR-27:** AI tidak mengarang penyebab tren atau menjanjikan harga masa depan. Semua angka tampilan utama berasal dari backend. Tolak keluaran yang kosong, formatnya tidak sesuai, atau memuat angka yang bertentangan dengan data backend; arahkan ke hasil manual/statistik.
-- **FR-28:** Tampilkan label “dibuat oleh AI”. Deskripsi, ringkasan, dan penjelasan berupa draf yang dapat diedit. Deskripsi disimpan ke produk hanya setelah petani menekan simpan/terbitkan; ringkasan dan penjelasan dapat disimpan sebagai catatan privat pengguna, tanpa mengubah dashboard global. Simpan penanda asal AI meskipun teks disunting.
-- **FR-29:** Batasi waktu tunggu backend ke penyedia maksimal 20 detik tanpa retry otomatis. Saat gagal, tampilkan pesan singkat, pertahankan isian, dan aktifkan pengisian manual. Kalkulator serta statistik tetap tersedia selama backend dapat diakses.
+- **FR-23:** Gunakan endpoint internal `POST /api/ai/assist` untuk ringkasan tren komoditas terpilih. Endpoint memakai autentikasi sesi, proteksi CSRF, validasi, dan batas sepuluh permintaan per menit per akun.
+- **FR-24:** Kirim ke Gemini hanya kalimat dengan statistik harga yang dihitung oleh backend. Gemini menentukan susunan kalimat.
+- **FR-25:** Backend mengambil pengamatan dalam 14, 30, atau 90 hari kalender terakhir WITA sesuai filter, lalu menghitung perubahan, rata-rata, minimum, serta maksimum. Jika tersedia kurang dari dua pengamatan, tampilkan statistik yang tersedia dan informasi data belum cukup.
+- **FR-26:** Ringkasan berisi dua hingga tiga kalimat tentang arah dan selisih perubahan dari pengamatan pertama ke terakhir, kisaran harga, serta rata-rata bila diperlukan.
+- **FR-27:** Laravel menerima hanya ID kalimat yang disiapkan backend. Jika keluaran tidak valid, statistik pasar tetap tampil.
+- **FR-28:** Tampilkan hasil berlabel “Dibuat oleh AI” di dekat grafik, bersama periode dan sumber PIHPS. Hasil tampil langsung tanpa editor atau penyimpanan catatan.
+- **FR-29:** Batasi waktu tunggu backend ke penyedia maksimal 20 detik tanpa retry otomatis. Saat gagal, tampilkan pesan singkat dan tetap tampilkan statistik yang tersedia.
 - **FR-30:** Saat internet putus, tampilkan status koneksi dan kegagalan penyimpanan dengan jelas. Pertahankan isian di halaman yang sedang terbuka; jangan mengklaim data tersimpan di server. Tidak ada jaminan isian bertahan setelah tab ditutup atau dimuat ulang.
+- **FR-31:** Panel Tanya Harga Pasar tampil di Beranda. Pengguna bisa langsung menyebut komoditas, satu tanggal, atau periode 14, 30, dan 90 hari dalam pertanyaan. Jika komoditas atau waktu tidak disebut, gunakan semua komoditas atau 14 hari sebagai nilai awal. Endpoint `POST /api/ai/market-chat` memakai autentikasi sesi, CSRF, serta kuota per akun yang sama dengan endpoint ringkasan. Gemini membaca maksud pertanyaan. Laravel menghitung harga ekstrem dari pengamatan PIHPS Bali dan menampilkan hasil seri serta komoditas tanpa pengamatan.
 
 ### 5.6 Model data minimum dan antarmuka
 
-Entitas minimum: pengguna/profil, komoditas, harga pasar, batch impor, riwayat koreksi harga, produk, pesanan, riwayat status pesanan, dan catatan AI privat. Model pesanan tetap satu produk; tabel keranjang dan pembayaran belum dibutuhkan.
+Entitas minimum mencakup pengguna/profil, komoditas, harga pasar, batch impor, riwayat koreksi harga, produk, pesanan, dan riwayat status pesanan. Model pesanan tetap satu produk; tabel keranjang dan pembayaran belum dibutuhkan.
 
-Backend mengatur akses dashboard harga, katalog, CRUD produk, impor admin, transisi pesanan, kalkulator/estimasi, dan satu endpoint AI. Respons AI minimum memuat jenis tugas, teks draf, penanda AI, serta referensi periode/sumber bila relevan. Error memiliki pesan aman yang dapat ditampilkan pengguna; detail penyedia tidak diteruskan mentah.
+Backend mengatur akses dashboard harga, katalog, CRUD produk, impor admin, transisi pesanan, kalkulator/estimasi, dan satu endpoint AI. Respons AI memuat teks ringkasan, penanda AI, serta periode dan sumber. Saat gagal, pengguna menerima pesan yang menjelaskan status ringkasan.
 
 ## 6. Kebutuhan Non-Fungsional
 
@@ -273,7 +273,7 @@ Referensi resmi:
 3. **Rancang database dan antarmuka.** Tetapkan relasi minimum bagian 5.6, kunci unik seri harga, representasi uang/kuantitas, transisi pesanan, dan wireframe responsif dashboard, etalase, formulir produk, serta panel admin.
 4. **Bangun jalur data harga.** Implementasikan sinkronisasi PIHPS terjadwal, pratinjau Artisan, validasi impor, penanganan duplikat, koreksi dengan audit, dashboard, grafik, status data lama/kosong, kalkulator, dan estimasi backend.
 5. **Bangun penjualan tanpa ketergantungan AI.** Implementasikan CRUD produk/foto, katalog/filter, snapshot harga pesanan, otorisasi, alokasi stok atomik, pembatalan, penyelesaian, dan riwayat status.
-6. **Tambahkan integrasi AI.** Bangun satu service dan endpoint tiga tugas, sumber konteks dari backend, prompt terpisah, label, penyuntingan draf, catatan privat, timeout/rate limit, serta fallback manual. Gunakan mock penyedia saat menguji kegagalan.
+6. **Tambahkan ringkasan tren AI.** Gunakan konteks dari backend, label AI, sumber dan periode, timeout, rate limit, serta statistik sebagai cadangan. Gunakan mock penyedia saat menguji kegagalan.
 7. **Lakukan verifikasi.** Jalankan unit test kalkulator/estimasi, feature test akses dan impor, uji stok bersamaan dengan MySQL, uji kegagalan AI, pemeriksaan responsif/keamanan, pengukuran performa, dan evaluasi MAE tanpa memakai data masa depan.
 8. **Uji pengguna dan siapkan serah terima.** Jalankan skenario KPI, perbaiki hambatan utama, siapkan dataset demo beserta sumber/tanggal, backup dan uji restore, README setup, akun uji, laporan evaluasi, serta naskah demo.
 
@@ -284,7 +284,7 @@ Referensi resmi:
 - Kalkulator dengan kg nol/negatif, biaya negatif, tambahan keuntungan nol, serta pembulatan rupiah.
 - Registrasi mencoba memilih admin; pengguna mengakses atau mengubah objek milik akun lain.
 - Pemesanan melebihi stok, perubahan harga setelah pemesanan, dua penerimaan bersamaan, serta pengiriman ulang aksi terima/batal/selesai.
-- Deskripsi AI memuat klaim yang tidak diberikan, ringkasan memuat angka bertentangan, respons kosong/rusak, timeout, kuota habis, dan penyuntingan hasil AI.
+- Ringkasan AI memuat ID kalimat tak dikenal, respons kosong/rusak, timeout, kuota habis, dan periode dengan data yang belum cukup.
 - Koneksi terputus saat AI dipanggil atau pesanan disimpan; UI tidak menampilkan sukses palsu.
 - Foto dengan ukuran/format terlarang, input HTML/script, navigasi keyboard, dan penggunaan pada layar 360 px.
 
@@ -298,7 +298,7 @@ Minggu dihitung relatif terhadap hari pertama implementasi. Setiap milestone sel
 | M2 — Informasi harga | Minggu 2 | Impor, grafik, kalkulator, estimasi, koreksi data | Impor tervalidasi; angka cocok fixture; kasus data kosong/lama berjalan; hasil kalkulator dan estimasi diuji |
 | M3 — Etalase | Minggu 3 | Profil petani, produk/foto, katalog dan filter responsif | Petani dapat menerbitkan/mengarsipkan produk; pembeli menemukan produk; kepemilikan dan validasi foto teruji |
 | M4 — Pesanan | Minggu 4 | Pemesanan, snapshot harga, penerimaan, pembatalan, penyelesaian | Alur pembeli–petani selesai; stok tidak negatif; penerimaan bersamaan dan aksi berulang teruji |
-| M5 — Asisten AI | Minggu 5 | Tiga tugas AI, label, editor draf, catatan privat, fallback | Ketiga tugas dapat didemokan; AI tidak menerbitkan/mengubah harga otomatis; skenario kegagalan tetap memungkinkan alur manual |
+| M5 — Ringkasan harga dengan AI | Minggu 5 | Ringkasan tren 14, 30, atau 90 hari, label AI, periode, sumber | Ringkasan dapat didemokan, angka cocok dengan statistik backend, dan statistik tetap tersedia saat Gemini gagal |
 | M6 — Validasi dan demo | Minggu 6 | Uji pengguna, evaluasi MAE, performa, dokumentasi, backup | Hasil KPI dan keterbatasan dilaporkan; tidak ada bug kritis terbuka; setup dapat diulang dan backup berhasil dipulihkan |
 
 ### Definition of Done rilis MVP

@@ -25,6 +25,9 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <a class="market-demo" href="{{ $sourceUrl }}"><span aria-hidden="true"></span> PIHPS Bank Indonesia</a>
+                <a class="ht-button" href="{{ route('home') }}#tanya-harga-pasar">
+                    <flux:icon.chat-bubble-left-right class="size-4" /> Tanya Harga Pasar
+                </a>
                 @can('use-selling-price-calculator')
                     <a class="ht-button" href="{{ route('calculator.show', ['komoditas' => $commodity]) }}"><flux:icon.calculator class="size-4" /> Hitung harga jual</a>
                 @endcan
@@ -100,6 +103,37 @@
                 <p class="market-note">Tanggal acuan <time datetime="{{ $estimate->referenceDate->toDateString() }}">{{ $estimate->referenceDate->translatedFormat('j F Y') }}</time></p>
             @endif
         </section>
+
+        @if ($aiTrend)
+            <section class="ht-card market-history space-y-3" aria-labelledby="ai-trend-title">
+                <h2 id="ai-trend-title" class="text-lg font-semibold">Ringkasan tren {{ $days }} hari terakhir</h2>
+                <p class="text-sm text-ink-muted">
+                    <time datetime="{{ $aiTrend['start'] }}">{{ \Carbon\CarbonImmutable::parse($aiTrend['start'])->translatedFormat('j F Y') }}</time>
+                    –
+                    <time datetime="{{ $aiTrend['end'] }}">{{ \Carbon\CarbonImmutable::parse($aiTrend['end'])->translatedFormat('j F Y') }}</time>
+                    · {{ $aiTrend['count'] }} pengamatan · <a href="{{ $aiTrend['source_url'] }}" class="ht-link underline">PIHPS Bank Indonesia</a>
+                </p>
+                @if ($aiTrend['count'] < 2)
+                    <p class="text-sm text-ink-muted" role="status">Data belum cukup untuk membuat ringkasan.</p>
+                    @if ($aiTrend['average'] !== null)
+                        <p class="text-sm">Harga pengamatan yang tersedia <strong>{{ $formatPrice($aiTrend['average']) }}/kg</strong>.</p>
+                    @endif
+                @else
+                    <dl class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+                        <div><dt class="text-ink-muted">Rata-rata</dt><dd class="font-semibold">{{ $formatPrice($aiTrend['average']) }}/kg</dd></div>
+                        <div><dt class="text-ink-muted">Terendah</dt><dd class="font-semibold">{{ $formatPrice($aiTrend['minimum']) }}/kg</dd></div>
+                        <div><dt class="text-ink-muted">Tertinggi</dt><dd class="font-semibold">{{ $formatPrice($aiTrend['maximum']) }}/kg</dd></div>
+                        <div>
+                            <dt class="text-ink-muted">Perubahan</dt>
+                            <dd class="font-semibold">
+                                {{ $aiTrend['change'] === 0 ? 'Stabil' : ($aiTrend['change'] > 0 ? 'Naik ' : 'Turun ').$formatPrice(abs($aiTrend['change'])).'/kg' }}
+                            </dd>
+                        </div>
+                    </dl>
+                @endif
+
+            </section>
+        @endif
 
         @if ($latest !== null)
         <section class="ht-card market-history" aria-labelledby="market-history-title">

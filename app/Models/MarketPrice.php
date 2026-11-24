@@ -27,11 +27,14 @@ final class MarketPrice extends Model
         ];
     }
 
-    /** @param Builder<self> $query */
+    /**
+     * @param  Builder<self>  $query
+     * @param  string|list<string>  $commodity
+     */
     #[Scope]
-    protected function pihpsBali(Builder $query, string $commodity): void
+    protected function pihpsBali(Builder $query, string|array $commodity): void
     {
-        $query->where('commodity', $commodity)
+        $query->whereIn('commodity', (array) $commodity)
             ->where('province', PihpsBaliPrices::PROVINCE)
             ->where('market_type', PihpsBaliPrices::MARKET_TYPE);
     }

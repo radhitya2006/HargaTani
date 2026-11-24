@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarketChatController;
 use App\Http\Controllers\MarketPriceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -20,6 +22,10 @@ Route::get('/hasil-panen/{product}', [CatalogController::class, 'show'])->whereN
 Route::get('/hasil-panen/{product}/foto', [CatalogController::class, 'photo'])->whereNumber('product')->name('catalog.photo');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/tanya-harga-pasar', fn () => redirect(route('home').'#tanya-harga-pasar'))->name('ai.market-chat.open');
+    Route::post('/api/ai/assist', AiAssistantController::class)->middleware('throttle:ai-assist')->name('ai.assist');
+    Route::post('/api/ai/market-chat', MarketChatController::class)->middleware('throttle:ai-assist')->name('ai.market-chat');
+
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('admin/dashboard', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.dashboard');
     Route::get('petani/dashboard', [DashboardController::class, 'petani'])->middleware('role:petani')->name('petani.dashboard');

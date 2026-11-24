@@ -1,0 +1,205 @@
+.product-detail {
+    width: min(100% - 2rem, 39rem);
+    margin-inline: auto;
+    padding-block: .5rem 3rem;
+}
+
+.product-detail-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .65rem;
+    margin-block-end: .75rem;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+.product-detail-breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+}
+
+.product-detail-breadcrumb [aria-current] {
+    color: var(--forest);
+}
+
+.product-detail-grid {
+    display: grid;
+    grid-template-areas: "photo" "purchase" "description";
+    align-items: start;
+    gap: 1rem;
+}
+
+.product-detail-photo {
+    grid-area: photo;
+    inline-size: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius-panel);
+    background: var(--color-primary-soft);
+    object-fit: cover;
+}
+
+.product-detail-purchase {
+    grid-area: purchase;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+}
+
+.product-detail-badge {
+    display: inline-block;
+    border-radius: .55rem;
+    padding: .35rem .65rem;
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+    font-size: .8rem;
+    font-weight: 650;
+}
+
+.product-detail-title {
+    margin-block-start: .75rem;
+    font-size: clamp(1.6rem, 2.5vw, 2.15rem);
+    font-weight: 750;
+    letter-spacing: -.045em;
+    line-height: 1.15;
+}
+
+.product-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .35rem 1rem;
+    margin-block-start: .55rem;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+.product-detail-price {
+    margin-block: .9rem 1.15rem;
+    color: var(--color-primary);
+    font-size: clamp(1.85rem, 3vw, 2.4rem);
+    font-weight: 750;
+    letter-spacing: -.045em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-detail-price small {
+    margin-inline-start: .2em;
+    color: var(--muted);
+    font-size: .42em;
+    font-weight: 500;
+    letter-spacing: normal;
+}
+
+.product-detail-description,
+.product-order-panel {
+    min-inline-size: 0;
+    border-radius: var(--radius-panel);
+    padding: clamp(1rem, 2vw, 1.5rem);
+    background: var(--color-surface);
+    overflow-wrap: anywhere;
+}
+
+.product-detail-description {
+    grid-area: description;
+}
+
+.product-order-form {
+    display: grid;
+    gap: .85rem;
+    margin-block-start: .75rem;
+}
+
+.product-order-quantity {
+    display: flex;
+    gap: .6rem;
+}
+
+.product-order-quantity :is(input, button) {
+    min-block-size: 2.75rem;
+    border: 1px solid var(--color-control-line);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--forest);
+}
+
+.product-order-quantity input {
+    flex: 1;
+    min-inline-size: 0;
+    padding-inline: .5rem;
+    font-size: 1rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-order-quantity button {
+    display: grid;
+    flex: 0 0 2.75rem;
+    place-items: center;
+    cursor: pointer;
+}
+
+.product-order-quantity button:enabled:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.product-order-quantity button:disabled {
+    border-color: var(--color-line);
+    color: var(--muted);
+    opacity: .55;
+    cursor: default;
+}
+
+.product-order-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25rem 1rem;
+    border-block-start: 1px solid var(--color-line);
+    padding-block-start: .75rem;
+    color: var(--muted);
+}
+
+.product-order-total output {
+    color: var(--forest);
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    font-weight: 750;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-order-submit {
+    min-block-size: 3rem;
+    border-radius: var(--radius-control);
+    padding-block: .55rem;
+    font-size: .9375rem;
+    cursor: pointer;
+}
+
+.product-order-submit:disabled {
+    opacity: .65;
+    cursor: wait;
+}
+
+.product-order-note {
+    margin-block-start: -.3rem;
+    color: var(--muted);
+    font-size: .8rem;
+    text-align: center;
+}
+
+@media (min-width: 56rem) {
+    .product-detail {
+        width: min(100% - 3rem, 70rem);
+    }
+
+    .product-detail-grid {
+        grid-template-areas: "photo purchase" "description purchase";
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        column-gap: 1.5rem;
+    }
+}

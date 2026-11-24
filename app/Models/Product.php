@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int|null $farmer_id
+ * @property bool $description_ai_generated
  * @property string $photo_path
  * @property int $price_per_kg
  * @property string $stock_kg
@@ -27,12 +28,13 @@ final class Product extends Model
 
     public const MAX_STOCK_KG = '99999999.99';
 
-    protected $attributes = ['status' => 'draf'];
+    protected $attributes = ['status' => 'draf', 'description_ai_generated' => false];
 
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
+            'description_ai_generated' => 'boolean',
             'price_per_kg' => 'integer',
             'stock_kg' => 'decimal:2',
             'harvested_on' => 'immutable_date',

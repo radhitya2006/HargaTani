@@ -51,10 +51,7 @@ final class CatalogController extends Controller
     {
         $listing = Product::query()->published()->with('farmer:id,name,district')->whereKey($product)->firstOrFail();
 
-        return view('catalog.show', [
-            'product' => $listing,
-            'commodityName' => PriceCommodities::ALL[$listing->commodity]['name'],
-        ]);
+        return view('catalog.show', ['product' => $listing]);
     }
 
     public function photo(string $product): StreamedResponse

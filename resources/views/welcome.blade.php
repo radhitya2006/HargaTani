@@ -71,8 +71,11 @@
                 @endphp
                 <article class="ht-card ht-price ht-{{ $item['tone'] }}" data-scroll-reveal>
                     <h3>
-                        <span class="ht-swatch" aria-hidden="true"></span>
-                        <a class="ht-link" href="{{ route('prices.index', ['komoditas' => $slug]) }}">{{ $item['name'] }}</a>
+                        <a class="ht-link ht-price-link" href="{{ route('prices.index', ['komoditas' => $slug]) }}">
+                            <img class="ht-price-photo" src="{{ asset('images/komoditas/'.$slug.'.webp') }}"
+                                width="44" height="44" loading="lazy" decoding="async" alt="">
+                            <span>{{ $item['name'] }}</span>
+                        </a>
                     </h3>
                     @if ($item['latest'])
                     <p class="ht-amount">Rp{{ number_format($item['latest']['price'], 0, ',', '.') }}<small>/kg</small></p>
@@ -94,6 +97,7 @@
             @endforeach
         </div>
         <div class="ht-meta" data-scroll-reveal><small>Referensi harga eceran per kilogram</small></div>
+        @include('home.market-chat')
     </section>
 
     @if ($canCalculatePrice)

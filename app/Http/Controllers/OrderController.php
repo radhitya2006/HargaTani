@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 
 final class OrderController extends Controller
 {
@@ -34,13 +33,8 @@ final class OrderController extends Controller
     public function create(Product $product): View
     {
         Gate::authorize('create', Order::class);
-        $listing = Product::query()->published()->with('farmer:id,name')->whereKey($product->id)->firstOrFail();
-        $token = old('submission_token');
-
-        return view('orders.create', [
-            'product' => $listing,
-            'token' => is_string($token) && Str::isUuid($token) ? $token : (string) Str::uuid(),
-        ]);
+        $listing = Product::query()->published()->with('farmer:id,name,district')->whereKey($product->id)->firstOrFail();
+        return view('orders.create', ['product' => $listing]);
     }
 
     public function store(Request $request, Product $product, MarketplaceOrders $orders): JsonResponse|RedirectResponse

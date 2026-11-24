@@ -127,6 +127,23 @@ final class MarketplaceOrdersTest extends TestCase
         $this->assertSame(30001, $order->total_price);
     }
 
+    public function test_order_quantity_carries_through_login_and_the_listing_can_submit_an_order(): void
+    {
+        $details = route('catalog.show', $this->listing);
+        $create = route('orders.create', [$this->listing, 'quantity_kg' => '2,50']);
+
+        $this->get($details)->assertOk()
+            ->assertSee('Rp30.001')->assertSee('Masuk sebagai pembeli')->assertDontSee('submission_token');
+        $this->get($create)->assertRedirect(route('login'));
+        $this->assertSame($create, session('url.intended'));
+
+        $this->actingAs($this->buyer)->get($create)->assertOk()
+            ->assertSee('value="2,5"', escape: false)->assertSee('Rp75.003');
+        $this->get($details)->assertOk()->assertSee('submission_token')->assertSee('Total perkiraan');
+        $this->from($details)->post(route('orders.store', $this->listing), $this->payload(['quantity_kg' => '2,50']))
+            ->assertRedirect(route('orders.show', Order::query()->sole()));
+    }
+
     public function test_order_actions_respect_roles_and_keep_stock_correct_on_rejection_and_cancellation(): void
     {
         $pending = $this->place();

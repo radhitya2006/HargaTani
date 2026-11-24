@@ -6,6 +6,8 @@ final class PriceCommodities
 {
     public const DEFAULT = 'bawang-merah';
 
+    public const ALL_OPTION = 'all';
+
     public const PERIODS = [14, 30, 90];
 
     public const ALL = [
