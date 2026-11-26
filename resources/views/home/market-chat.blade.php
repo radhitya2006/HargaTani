@@ -2,7 +2,7 @@
 @use('App\Services\PihpsBaliPrices')
 
 <details id="tanya-harga-pasar" class="ht-card market-chat group mt-6 min-w-0 scroll-mt-20"
-    @if (auth()->check() && GeminiAssistant::available())
+    @if (GeminiAssistant::available())
         data-market-chat data-url="{{ route('ai.market-chat') }}" data-csrf="{{ csrf_token() }}"
     @endif>
     <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-panel p-4 sm:px-6 [&::-webkit-details-marker]:hidden">
@@ -19,11 +19,13 @@
             <a class="ht-link underline" href="{{ PihpsBaliPrices::SOURCE_URL }}">PIHPS Bank Indonesia</a>.
         </p>
 
-        @guest
-            <a class="ht-button ht-primary w-fit" href="{{ route('ai.market-chat.open') }}">Masuk untuk bertanya</a>
-        @elseif (! GeminiAssistant::available())
+        @if (! GeminiAssistant::available())
             <p class="text-sm text-ink-muted">Chatbot belum tersedia.</p>
         @else
+            @guest
+                <p class="text-sm text-ink-muted">Percakapan tamu tidak disimpan oleh HargaTani.</p>
+            @endguest
+
             <div role="log" aria-label="Percakapan harga pasar" tabindex="0"
                 class="max-h-96 overflow-y-auto overscroll-contain rounded-control border border-line bg-surface p-3" data-chat-log hidden>
                 <ol class="grid gap-3" data-chat-messages></ol>
@@ -54,6 +56,6 @@
                 <p class="text-sm text-ink-muted" role="status" data-chat-status></p>
             </form>
             <noscript><p class="text-sm text-ink-muted">Aktifkan JavaScript untuk bertanya tentang harga pasar.</p></noscript>
-        @endguest
+        @endif
     </div>
 </details>

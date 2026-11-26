@@ -36,7 +36,11 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         Gate::policy(User::class, UserPolicy::class);
         Gate::define('use-selling-price-calculator', fn (?User $user): bool => $user?->role !== Role::Pembeli);
-        RateLimiter::for('ai-assist', fn (Request $request) => Limit::perMinute(10)->by((string) $request->user()?->id));
+        RateLimiter::for('ai-assist', function (Request $request): Limit {
+            $user = $request->user();
+
+            return Limit::perMinute(10)->by($user ? (string) $user->id : 'guest:'.$request->ip());
+        });
         Livewire::addPersistentMiddleware([
             EnsureActiveUser::class,
             EnsureRole::class,

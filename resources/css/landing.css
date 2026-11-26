@@ -154,7 +154,7 @@
 
 .ht-wrap { width: min(100% - clamp(2rem, 5vw, 5rem), 80rem); margin-inline: auto; }
 .ht-demo-bar { border-bottom: 1px solid var(--color-line); }
-.ht-actions, .ht-benefits, .ht-calc-copy, .ht-between, .ht-farmer { display: flex; align-items: center; }
+.ht-actions, .ht-calc-copy, .ht-between, .ht-farmer { display: flex; align-items: center; }
 .ht-between { justify-content: space-between; gap: 1rem; }
 .ht-brand { display: inline-flex; width: 11rem; max-width: 100%; }
 .ht-brand img { display: block; width: 100%; height: auto; }
@@ -185,8 +185,6 @@
 .ht-hero em::after { content: ''; position: absolute; inset: auto 0 -.12em; height: .13em; border-top: .07em solid #d6b755; border-radius: 55%; transform: rotate(-1deg); }
 .ht-lead { color: var(--muted); max-width: 29rem; line-height: 1.85; font-size: .96rem; }
 .ht-actions { margin-block: 1.8rem; flex-wrap: wrap; gap: .75rem; }
-.ht-benefits { flex-wrap: wrap; gap: .4rem 1rem; font-size: .71rem; color: var(--muted); }
-.ht-benefits span + span { padding-left: 1rem; border-left: 1px solid var(--landing-outline); }
 .ht-hero-art { position: relative; display: grid; min-width: 0; padding: 0 .6rem 1.25rem 2.1rem; isolation: isolate; }
 .ht-hero-art::before, .ht-hero-art::after { content: ''; position: absolute; z-index: -1; top: -4%; right: 0; width: 18%; aspect-ratio: 1; border: 1px solid var(--landing-outline); border-radius: 50%; }
 .ht-hero-art::after { transform: translate(-30%, -12%); }

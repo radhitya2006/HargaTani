@@ -19,10 +19,9 @@
                 ? 'Pantau harga pasar, tentukan harga jual yang lebih terukur, dan temukan hasil panen langsung dari petani lokal.'
                 : 'Bandingkan harga pasar dan temukan hasil panen langsung dari petani lokal.' }}</p>
             <div class="ht-actions">
-                <a class="ht-button ht-primary" href="{{ route('prices.index') }}">Lihat harga pasar <span aria-hidden="true">→</span></a>
+                <a class="ht-button ht-primary" href="{{ route('prices.index') }}">Lihat harga pasar</a>
                 <a class="ht-button" href="{{ route('catalog.index') }}"><flux:icon.shopping-bag class="size-4" /> Jelajahi hasil panen</a>
             </div>
-            <div class="ht-benefits"><span>✓ &nbsp; Harga lebih transparan</span><span>Terhubung dengan petani</span></div>
         </div>
         <div class="ht-hero-art">
             <div class="ht-hero-photo">

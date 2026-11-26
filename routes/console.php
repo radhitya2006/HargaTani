@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::call(fn (): bool => Artisan::call('pihps:sync') === 0)
     ->name('pihps:sync')
     ->weekdays()
-    ->dailyAt('15:00')
+    ->dailyAt('12:00')
     ->timezone('Asia/Makassar');
 
 Artisan::command('inspire', function () {

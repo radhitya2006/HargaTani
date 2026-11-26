@@ -70,7 +70,7 @@ Tabel `price_sync_runs` menyimpan rentang, waktu, status, pesan, dan jumlah harg
 
 ### Jadwal di Windows
 
-Jadwal Laravel ditetapkan Senin–Jumat pukul **15.00 WITA**. Dari PowerShell di root proyek dengan PHP Laragon pada PATH, jalankan:
+Jadwal Laravel ditetapkan Senin–Jumat pukul **12.00 WITA**. Dari PowerShell di root proyek dengan PHP Laragon pada PATH, jalankan:
 
 ```powershell
 .\scripts\install-scheduler.ps1
@@ -112,7 +112,7 @@ Panel moderasi/nonaktifkan akun belum tersedia. Fondasi sudah menolak login dan 
 
 1. Jalankan `php artisan migrate`.
 2. Isi `GEMINI_API_KEY` dan `GEMINI_MODEL` di `.env` lokal. Gunakan ID model Gemini yang mendukung `generateContent` dan keluaran JSON terstruktur di akun Anda. Jalankan `php artisan config:clear` setelah mengubah konfigurasi. [Referensi Gemini](https://aistudio.google.com/api-reference/generate-content)
-3. Jalankan `npm.cmd run build` atau `npm.cmd run dev`. Setelah masuk, buka **Beranda** dan cari **Tanya Harga Pasar** di bawah kartu harga. Coba **Komoditas termahal** atau ketik “Harga tertinggi cabai rawit merah dalam 14, 30, dan 90 hari?”. Jika komoditas atau waktu tidak disebut, chatbot memakai semua komoditas atau 14 hari sebagai nilai awal.
+3. Jalankan `npm.cmd run build` atau `npm.cmd run dev`. Buka **Beranda** dan cari **Tanya Harga Pasar** di bawah kartu harga. Chatbot bisa dipakai tanpa masuk. Coba **Komoditas termahal** atau ketik “Harga tertinggi cabai rawit merah dalam 14, 30, dan 90 hari?”. Jika komoditas atau waktu tidak disebut, chatbot memakai semua komoditas atau 14 hari sebagai nilai awal.
 
 Pilihan komoditas dan periode yang disebut dalam pertanyaan diutamakan. Coba juga “Harga cabai rawit tanggal 20 November 2026?” untuk mencari satu tanggal pengamatan. Jika pertanyaan tidak menyebut tahun, chatbot memakai tahun berjalan dalam WITA. Laravel membandingkan tiga komoditas PIHPS yang tersedia berdasarkan harga ekstrem per kg yang tercatat, serta menyertakan tanggal, periode, dan sumber. Harga terakhir, tertinggi, dan terendah bisa ditampilkan dengan satu pengamatan. Ringkasan dan perubahan perlu minimal dua pengamatan. Percakapan hanya ada di halaman yang sedang dibuka.
 

@@ -112,7 +112,7 @@ function initializeMarketChat() {
                 body: JSON.stringify({ question: text }),
             });
             if (response.redirected || response.status === 401 || response.status === 419) {
-                status.textContent = 'Sesi berakhir. Masuk kembali untuk bertanya.';
+                status.textContent = 'Sesi berakhir. Muat ulang halaman untuk bertanya lagi.';
                 return;
             }
             if (response.status === 429) {

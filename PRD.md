@@ -118,7 +118,7 @@ Tidak ada target akurasi estimasi yang diklaim sebelum evaluasi. Jika data 60 pe
 
 1. Login sebagai admin; akun admin dibuat melalui seeder, bukan pendaftaran publik.
 2. Operator menjalankan pratinjau Artisan untuk tiga seri PIHPS Bali dan memeriksa cakupan tanggal masing-masing.
-3. Mengisi riwayat awal hingga 90 hari kalender ke MySQL. Laravel menjalankan pembaruan sembilan hari terakhir pada hari kerja pukul 15.00 WITA.
+3. Mengisi riwayat awal hingga 90 hari kalender ke MySQL. Laravel menjalankan pembaruan sembilan hari terakhir pada hari kerja pukul 12.00 WITA.
 4. Memeriksa hasil sinkronisasi. Kesalahan format atau kegagalan satu permintaan membatalkan seluruh pembaruan harga. Seri tanpa pengamatan memunculkan peringatan cakupan.
 5. Memeriksa grafik, tanggal pengamatan terakhir, dan riwayat koreksi saat PIHPS merevisi harga.
 6. Memoderasi akun atau menonaktifkan produk bila diperlukan. Penonaktifan produk menghentikan pesanan baru; pesanan yang sudah ada tetap dapat ditangani.
@@ -171,7 +171,7 @@ Seluruh kebutuhan di bawah berprioritas wajib untuk MVP, kecuali yang dinyatakan
 - **FR-28:** Tampilkan hasil berlabel “Dibuat oleh AI” di dekat grafik, bersama periode dan sumber PIHPS. Hasil tampil langsung tanpa editor atau penyimpanan catatan.
 - **FR-29:** Batasi waktu tunggu backend ke penyedia maksimal 20 detik tanpa retry otomatis. Saat gagal, tampilkan pesan singkat dan tetap tampilkan statistik yang tersedia.
 - **FR-30:** Saat internet putus, tampilkan status koneksi dan kegagalan penyimpanan dengan jelas. Pertahankan isian di halaman yang sedang terbuka; jangan mengklaim data tersimpan di server. Tidak ada jaminan isian bertahan setelah tab ditutup atau dimuat ulang.
-- **FR-31:** Panel Tanya Harga Pasar tampil di Beranda. Pengguna bisa langsung menyebut komoditas, satu tanggal, atau periode 14, 30, dan 90 hari dalam pertanyaan. Jika komoditas atau waktu tidak disebut, gunakan semua komoditas atau 14 hari sebagai nilai awal. Endpoint `POST /api/ai/market-chat` memakai autentikasi sesi, CSRF, serta kuota per akun yang sama dengan endpoint ringkasan. Gemini membaca maksud pertanyaan. Laravel menghitung harga ekstrem dari pengamatan PIHPS Bali dan menampilkan hasil seri serta komoditas tanpa pengamatan.
+- **FR-31:** Panel Tanya Harga Pasar tampil di Beranda dan dapat digunakan tanpa login. Pengguna bisa langsung menyebut komoditas, satu tanggal, atau periode 14, 30, dan 90 hari dalam pertanyaan. Jika komoditas atau waktu tidak disebut, gunakan semua komoditas atau 14 hari sebagai nilai awal. Endpoint `POST /api/ai/market-chat` memakai CSRF dan batas 10 permintaan per menit per alamat IP untuk tamu. Batas per akun tetap dibagi dengan endpoint ringkasan. HargaTani tidak menyimpan riwayat percakapan. Gemini membaca maksud pertanyaan. Laravel menghitung harga ekstrem dari pengamatan PIHPS Bali dan menampilkan hasil seri serta komoditas tanpa pengamatan.
 
 ### 5.6 Model data minimum dan antarmuka
 

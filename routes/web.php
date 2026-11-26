@@ -21,10 +21,11 @@ Route::get('/hasil-panen', [CatalogController::class, 'index'])->name('catalog.i
 Route::get('/hasil-panen/{product}', [CatalogController::class, 'show'])->whereNumber('product')->name('catalog.show');
 Route::get('/hasil-panen/{product}/foto', [CatalogController::class, 'photo'])->whereNumber('product')->name('catalog.photo');
 
+Route::get('/tanya-harga-pasar', fn () => redirect(route('home').'#tanya-harga-pasar'))->name('ai.market-chat.open');
+Route::post('/api/ai/market-chat', MarketChatController::class)->middleware('throttle:ai-assist')->name('ai.market-chat');
+
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/tanya-harga-pasar', fn () => redirect(route('home').'#tanya-harga-pasar'))->name('ai.market-chat.open');
     Route::post('/api/ai/assist', AiAssistantController::class)->middleware('throttle:ai-assist')->name('ai.assist');
-    Route::post('/api/ai/market-chat', MarketChatController::class)->middleware('throttle:ai-assist')->name('ai.market-chat');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('admin/dashboard', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.dashboard');

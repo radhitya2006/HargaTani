@@ -22,21 +22,17 @@ final class MarketChatTest extends TestCase
         $this->travelTo(now('Asia/Makassar')->setDate(2026, 11, 24)->startOfDay());
     }
 
-    public function test_home_hosts_the_panel_and_guests_are_returned_to_it_after_login(): void
+    public function test_home_and_the_chat_link_are_available_to_guests(): void
     {
         $open = route('ai.market-chat.open');
         $homePanel = route('home').'#tanya-harga-pasar';
-        $this->get(route('home'))->assertOk()->assertSee('Tanya Harga Pasar')->assertSee('Masuk untuk bertanya')
-            ->assertSee($open)->assertDontSee('data-market-chat');
-        $this->get($open)->assertRedirect(route('login'))->assertSessionHas('url.intended', $open);
-        $user = User::factory()->create();
-        $this->post(route('login'), ['email' => $user->email, 'password' => 'password'])->assertRedirect($open);
         $this->get($open)->assertRedirect($homePanel);
-
         $this->get(route('home'))->assertOk()->assertSee('<details id="tanya-harga-pasar"', escape: false)->assertSee('data-market-chat')
+            ->assertSee('Percakapan tamu tidak disimpan oleh HargaTani.')->assertDontSee('Masuk untuk bertanya')
             ->assertDontSee('name="commodity"', escape: false)->assertDontSee('name="period"', escape: false)
             ->assertSee('Komoditas termahal')->assertSee('Komoditas termurah');
         $this->get(route('prices.index'))->assertOk()->assertSee($homePanel)->assertDontSee('data-market-chat');
+        $this->assertGuest();
     }
 
     public function test_question_without_optional_scope_defaults_to_all_commodities_and_fourteen_days(): void
@@ -45,10 +41,11 @@ final class MarketChatTest extends TestCase
         $this->addPrice('2026-11-11', 64000, 'cabai-merah-besar');
         $this->addPrice('2026-11-24', 40000);
         Http::fake(['generativelanguage.googleapis.com/*' => Http::response($this->candidate(['intent' => 'maximum']))]);
-        $this->actingAs(User::factory()->create())->postJson(route('ai.market-chat'), ['question' => 'Harga tertingginya?'])->assertOk()
+        $response = $this->postJson(route('ai.market-chat'), ['question' => 'Harga tertingginya?'])->assertOk()
             ->assertJsonPath('results.0.period', 14)
             ->assertJsonPath('results.0.items.0.commodity', 'cabai-merah-besar')
             ->assertJsonPath('results.0.items.0.text', 'Harga tertinggi Rp64.000 per kg.');
+        $this->assertTrue($response->headers->hasCacheControlDirective('no-store'));
         Http::assertSent(function (Request $request): bool {
             $context = json_decode($request['contents'][0]['parts'][0]['text'], true, flags: JSON_THROW_ON_ERROR);
 
@@ -291,11 +288,10 @@ final class MarketChatTest extends TestCase
         Http::assertSentCount(5);
     }
 
-    public function test_chat_requires_session_csrf_and_supported_filter_values(): void
+    public function test_guest_chat_requires_session_csrf_and_supported_filter_values(): void
     {
         Http::fake();
-        $this->postJson(route('ai.market-chat'), $this->payload('Harga terakhir'))->assertUnauthorized();
-        $this->actingAs(User::factory()->create())->postJson(route('ai.market-chat'), [
+        $this->postJson(route('ai.market-chat'), [
             'question' => str_repeat('a', 301), 'commodity' => 'tomat', 'period' => 60,
         ])->assertJsonValidationErrors(['question', 'commodity', 'period']);
         $this->app['env'] = 'local';
@@ -307,6 +303,19 @@ final class MarketChatTest extends TestCase
         } finally {
             $this->app['env'] = 'testing';
         }
+        Http::assertNothingSent();
+    }
+
+    public function test_guest_rate_limit_is_per_ip(): void
+    {
+        Http::fake();
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1']);
+        for ($i = 0; $i < 10; $i++) {
+            $this->postJson(route('ai.market-chat'), $this->payload('Harga terakhir'))->assertOk();
+        }
+        $this->postJson(route('ai.market-chat'), $this->payload('Harga terakhir'))->assertTooManyRequests();
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.2'])
+            ->postJson(route('ai.market-chat'), $this->payload('Harga terakhir'))->assertOk();
         Http::assertNothingSent();
     }
 
